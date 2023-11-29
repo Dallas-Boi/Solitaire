@@ -2,36 +2,37 @@
 <html>
     <head>
         <link rel="stylesheet" href="style.css">
-        <title>Solitaire</title>
+        <title> - Solitaire - </title>
         <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+        <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js" integrity="sha256-xLD7nhI62fcsEZK2/v8LsBcb4lG7dgULkuXoXB/j91c=" crossorigin="anonymous"></script>
     </head>
     <body>
         <div id="header">
             <div></div>
         </div>
-        <div id="gameboard">
-            <div id="set1" class="card_set"><div id="set1_top" class="set_top"></div></div>
-            <div id="set2" class="card_set"><div id="set2_top" class="set_top"></div></div>
-            <div id="set3" class="card_set"><div id="set3_top" class="set_top"></div></div>
-            <div id="set4" class="card_set"><div id="set4_top" class="set_top"></div></div>
-            <div id="set5" class="card_set"><div id="set5_top" class="set_top"></div></div>
-            <div id="set6" class="card_set"><div id="set6_top" class="set_top"></div></div>
-            <div id="set7" class="card_set"><div id="set7_top" class="set_top"></div></div>
-        </div>
-        <div id="board_left">
-            <div id="draw_container">
-                <div id="draw_cards"></div>
-                <div id="drawed_cards"><div id="top_card"></div></div>
+        <div id="dragging_items"></div>
+        <div id="container">
+            <div id="gameboard">
+                <div id="set1" class="card_set"></div>
+                <div id="set2" class="card_set"></div>
+                <div id="set3" class="card_set"></div>
+                <div id="set4" class="card_set"></div>
+                <div id="set5" class="card_set"></div>
+                <div id="set6" class="card_set"></div>
+                <div id="set7" class="card_set"></div>
             </div>
-            <div id="finished-cards">
-                <div id="hearts"></div>
-                <div id="spades"></div>
-                <div id="diamonds"></div>
-                <div id="clubs"></div>
+            <div id="board_left">
+                <div id="draw_container">
+                    <div id="draw_cards"></div>
+                    <div id="drawed_cards"></div>
+                </div>
+                <div id="finished-cards">
+                    <div id="hearts"></div>
+                    <div id="spades"></div>
+                    <div id="diamonds"></div>
+                    <div id="clubs"></div>
+                </div>
             </div>
-        </div>
-        <div id="footer">
-            <div></div>
         </div>
         <script src="solitaire.js"></script>
     </body>
