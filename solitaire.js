@@ -89,6 +89,7 @@ function check_set_card(elm, set, rtn) {
 	]
 	// Fixes the issue with 10 being used as 1
 	if (elm.id[1] == "0") { check_data[0] = 10 }
+	if (elm_data.lastChild.id[1] == "0") { check_data[1] = 10 }
 	// Checks if the numbers are in order and if they are not the same color
 	if ((check_data[0] == check_data[1] - 1) && (check_data[2] !== check_data[3])) {
 		if (rtn !== true) {move_card(elm.id, elm_data.id)}
@@ -132,8 +133,8 @@ function clicked_card(e) {
 		return
 	}
 	// Moves the cards to selected place
-	while (drag_cards.firstChild) {
-		check_set_card(drag_cards.firstChild, card)
+	if (drag_cards.firstChild) {
+		for (var i=0; i < drag_cards.childElementCount+1; i++) {check_set_card(drag_cards.firstChild, card)}
 	}
 }
 
