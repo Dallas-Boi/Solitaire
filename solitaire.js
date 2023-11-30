@@ -6,25 +6,6 @@ const card_deck = [
 	"AD", "2D", "3D", "4D", "5D", "6D", "7D", "8D", "9D", "10D", "JD", "QD", "KD",
 	"AC", "2C", "3C", "4C", "5C", "6C", "7C", "8C", "9C", "10C", "JC", "QC", "KC",
 ]
-const onBoard = {
-	"set1": [],
-	"set2": [],
-	"set3": [],
-	"set4": [],
-	"set5": [],
-	"set6": [],
-	"set7": [],
-	"set1_top": [],
-	"set2_top": [],
-	"set3_top": [],
-	"set4_top": [],
-	"set5_top": [],
-	"set6_top": [],
-	"set7_top": [],
-	"draw_cards": [],
-	"drawed_cards": [],
-	"top_card": []
-}
 const divChange_event = [] // This will hold all observe events for set_top
 const draw_cards = document.getElementById("draw_cards")
 const drawed_cards = document.getElementById("drawed_cards")
@@ -70,7 +51,7 @@ function move_card(id, toElm) {
 	// Checks
 	if (data_list[0].id) {data_list[0] = id.id} // Fixes the id arg being a object or str
 	if (data_list[1].id) {data_list[1] = toElm.id} // Fixes the toElm arg being a object or str
-	if ((drag_cards.childElementCount == 0) && (["gamemode", "container", "board_left", "draw_container", "", "finished-cards"].includes(id))) {return} // This will stop players from grabbing the whole board
+	if ((drag_cards.childElementCount >= 0) && (["gamemode", "container", "board_left", "draw_container", "", "finished-cards"].includes(id))) {return} // This will stop players from grabbing the whole board
 	// Tries to move the card if failed then it will 
 	try {$(`#${data_list[0]}`).appendTo(`#${data_list[1]}`);} catch {return}
 	// Checks if the player has won the game
@@ -87,6 +68,7 @@ function move_card(id, toElm) {
 // If the card was found to be overlapping a card set then it will check the card set to see if its placeable
 function check_set_card(elm, set, rtn) {
 	var elm_data = set.parentNode
+	console.log(elm, set, rtn)
 	if (set.id.includes("set")) {elm_data = set}
 	// If the player moves a card into the finished cards elements
 	if (elm_data.className.includes("finish_card")) {
@@ -106,8 +88,7 @@ function check_set_card(elm, set, rtn) {
 		getCardSetColor(elm_data.lastChild.id[1])
 	]
 	// Fixes the issue with 10 being used as 1
-	if (check_data[1] == 0) { check_data[0] = 10 }
-	console.log(check_data)
+	if (elm.id[1] == "0") { check_data[0] = 10 }
 	// Checks if the numbers are in order and if they are not the same color
 	if ((check_data[0] == check_data[1] - 1) && (check_data[2] !== check_data[3])) {
 		if (rtn !== true) {move_card(elm.id, elm_data.id)}
@@ -120,8 +101,8 @@ function check_set_card(elm, set, rtn) {
 // Makes Cards draggable
 function clicked_card(e) {
 	var card = e.target
-	// This will stop players from adding cards to the drawed_cards
-	if (["drawed_cards","gamemode", "container", "board_left", "draw_container", ""].includes(card.id)) {
+	// This will move the card back to their old location based on where they click
+	if (["drawed_cards","gamemode", "container", "board_left", "draw_container", "", "draw_cards", "finished-cards", "header"].includes(card.id)) {
 		if ((drag_cards.childElementCount > 0)) {
 			while (drag_cards.firstChild) {
 				move_card(drag_cards.firstChild, old_cont.id)
@@ -133,6 +114,7 @@ function clicked_card(e) {
 	if (drag_cards.childElementCount == 0) {
 		if (card.id.includes("set")) {return} // This will stop the whole set of cards moving to the draggable items container
 		if (card.className.includes("finish_icon")) {return} // This stops the player from dragging the card finishing icon
+		if (card.className.includes("finish_icon")) {return} // This stops the plaer from dragging the finish_card
 		// Makes a list of 
 		var set_list = Array.from(e.target.parentNode.children)
 		var index = set_list.indexOf(card)
@@ -168,7 +150,6 @@ function place_card(card, set, clss) {
 	newCard.src = `cards/${card}.jpg`
 	newCard.className = clss
 	cardSet.appendChild(newCard)
-	onBoard[set].push(card)
 	card_deck.splice(0, 1) // Removes the first card in the deck
 }
 

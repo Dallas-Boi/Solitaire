@@ -59,12 +59,12 @@ a {
     margin-left: 2em;
 }
 
-#draw_cards > * {
-    position: absolute;
-}
-
-#drawed_cards > * {
-    position: absolute;
+.offhand > * {
+    position: relative;
+    margin-top:-6.40em;
+    top:6.30em;
+    margin-left:50%;
+    transform: translate(-50%)
 }
 
 /* Items on the board */
