@@ -16,7 +16,6 @@ a {
 #dragging_items { 
     position: absolute;
     z-index: 5;
-    border: 3px solid red;
     width:90px;
     height:10%;
     max-width: 100%;
@@ -26,8 +25,13 @@ a {
 
 #dragging_items > * {
     position: relative;
-    margin-top:-100px;
-    top:100px;
+    display: flex;
+    margin-top:-5.1em;
+    justify-content: center;
+    align-items: center;
+    top:5.05em;
+    margin-left:50%;
+    transform: translate(-50%);
 }
 
 /* Items on the board left */
@@ -36,7 +40,7 @@ a {
     border: 1px solid black;
     position: relative;
     display: flex;
-    width: 300px;
+    width: 100%;
     max-width: 100%;
     height: 200px;
     max-height: 100%;
@@ -45,28 +49,22 @@ a {
     align-items: center;
 }
 
-#draw_cards {
-    width:30%;
-    max-width: 30%;
-    margin-top:35%;
-    transform: translate(-25%, 100%);
+#draw_container > * {
+    position: relative;
+    border:1px solid black;
+    width:130px;
+    max-width: 100%;
+    height: 100px;
+    margin-right: 2em;
+    margin-left: 2em;
 }
 
 #draw_cards > * {
     position: absolute;
-    top:-125px;
-}
-
-#drawed_cards {
-    width:30%;
-    max-width: 30%;
-    margin-top:35%;
-    transform: translate(25%, -50%);
 }
 
 #drawed_cards > * {
     position: absolute;
-    top:-120px;
 }
 
 /* Items on the board */
@@ -76,17 +74,16 @@ a {
     width:100%;
     max-height: 100%;
     height: 100%;
-    top:75px;
-    border: 1px solid black;
+    top:110px;
+    user-select: none;
 }
 
 /* The Container with draw cards and end cards */
 #board_left {
     position: relative;
-    display: flex;
     border: 3px solid black;
-    width:20%;
-    max-width: 19%;
+    width:21%;
+    max-width: 100%;
     height: 100%;
     max-height: 80%;
     top:-81%;
@@ -97,9 +94,9 @@ a {
     border:3px dotted black;
     height:100%;
     max-height: 80%;
-    width: 75%;
-    max-width: 90%;
-    left:25%;
+    width: 70%;
+    max-width: 100%;
+    left:28%;
     position: relative;
     display: flex;
     justify-content: center;
@@ -107,30 +104,69 @@ a {
 }
 
 #gameboard .card_set {
-    border:1px dotted black;
-    width: 90px;
     height:100%;
     max-height: 100%;
-    margin-left: 30px;
-    margin-right:30px;
-    margin-top:10px;
+    flex: 2.5em;
+    justify-content: center;
+    align-items: center;
+}
+
+#gameboard .card_set > * {
+    justify-content: center;
+    align-items: center;
+  	left: 50%;
+  	transform: translate(-50%);
 }
 
 .card {
     position: relative;
     display: flex;
     border: 1px solid black;
-    width:100%;
-    height:120px;
+    width: 70px;
+    height:100px;
     box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
     border-radius: 10%;
+    -webkit-user-drag: none; /* Stops the user from dragging the image and not the element */
 }
 
 .card_set .card {
-    margin-top:-100px;
+    margin-top:-5.1em;
     top:100px;
 }
 
+/* All the Finished cards container */
+#finished-cards {
+    display:flex;
+    width:100%;
+    max-width: 100%;
+    height:65%;
+    flex-wrap: wrap;
+    place-items: center;
+	justify-content: center;
+	align-items: center;
+}
+
+.finish_card {
+    width:20px;
+    height:100px;
+    flex: 45%;
+    flex-wrap: wrap;
+    border: 1px solid black;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 50px;
+    line-height: 2em;
+}
+
+.finish_card .card {
+    margin-top: -2em;
+    margin-left:50%;
+    transform: translate(-50%);
+}
+
+/* Finished Card Text Colors */
+.color_red {color: red;}
+.color_black {color: black;}
 
 /* Hidden Cards */
 .card_hidden { content: url("./cards/purple_back.jpg"); }

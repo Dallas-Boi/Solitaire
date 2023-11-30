@@ -59,25 +59,41 @@ function getCardSetColor(card_set) {
 	else if (["C", "S"].includes(card_set)) { return "black" }
 }
 
+// Handles the winning animations
+function win_game_screen() {
+	console.log("Player Has won")
+}
+
 // When the a card moves
-function move_card(id, toElm, clsName) {
-	var data_list = [id, toElm, clsName] // List of the data
+function move_card(id, toElm) {
+	var data_list = [id, toElm] // List of the data
 	// Checks
 	if (data_list[0].id) {data_list[0] = id.id} // Fixes the id arg being a object or str
 	if (data_list[1].id) {data_list[1] = toElm.id} // Fixes the toElm arg being a object or str
-	console.log(data_list)
-	if (data_list[2]) { document.getElementById(id).className = data_list[2] } // Checks if there is a vale for clsName
-	// Moves the card
-	$(`#${data_list[0]}`).appendTo(`#${data_list[1]}`); 
+	if ((drag_cards.childElementCount == 0) && (["gamemode", "container", "board_left", "draw_container", "", "finished-cards"].includes(id))) {return} // This will stop players from grabbing the whole board
+	// Tries to move the card if failed then it will 
+	try {$(`#${data_list[0]}`).appendTo(`#${data_list[1]}`);} catch {return}
+	// Checks if the player has won the game
+	var hearts = document.getElementById("hearts")
+	var spades = document.getElementById("spades")
+	var diamonds = document.getElementById("diamonds")
+	var clubs = document.getElementById("clubs")
+	console.log(hearts.childElementCount+spades.childElementCount+diamonds.childElementCount+clubs.childElementCount)
+	if (hearts.childElementCount+spades.childElementCount+diamonds.childElementCount+clubs.childElementCount == 56) {
+		win_game_screen()
+	}
 }
 
 // If the card was found to be overlapping a card set then it will check the card set to see if its placeable
 function check_set_card(elm, set, rtn) {
 	var elm_data = set.parentNode
 	if (set.id.includes("set")) {elm_data = set}
-	console.log(elm, set, rtn)
-	console.log(elm_data)
-	console.log(elm_data.lastChild)
+	// If the player moves a card into the finished cards elements
+	if (elm_data.className.includes("finish_card")) {
+		if ((elm_data.childElementCount == convertLetter_toNumber(elm.id[0])) && (elm_data.firstChild.id[1].toUpperCase() == elm.id[1])) {move_card(elm.id, elm_data.id)} // If the cards number is equaled to the amount of elements in that container
+		else {move_card(elm.id, old_cont.id)} // Moves the card to its origial Placement
+		return
+	}
 	if (!(elm_data.lastChild)) { // If there is no element then it will just move the card since it is empty
 		if (rtn !== true) {move_card(elm.id, elm_data.id)}
 		return true;
@@ -89,47 +105,51 @@ function check_set_card(elm, set, rtn) {
 		getCardSetColor(elm.id[1]),
 		getCardSetColor(elm_data.lastChild.id[1])
 	]
-	
 	// Fixes the issue with 10 being used as 1
-	if (elm.id[1] == 0) { check_data[0] = 10 }
+	if (check_data[1] == 0) { check_data[0] = 10 }
 	console.log(check_data)
 	// Checks if the numbers are in order and if they are not the same color
 	if ((check_data[0] == check_data[1] - 1) && (check_data[2] !== check_data[3])) {
-		console.log("overlapping")
 		if (rtn !== true) {move_card(elm.id, elm_data.id)}
 		return true;
 	}
-	move_card(elm.id, old_cont.id)
+	move_card(elm.id, old_cont.id) // Moves the card to its origial Placement
 	return false;
 }
 
 // Makes Cards draggable
 function clicked_card(e) {
-	console.log("Clicked")
 	var card = e.target
-	// If the parentElement id should not be clicked
-	if (["gamemode", "container", "board_left", "draw_container", "finished-cards", "", "draw_cards"].includes(card.parentNode.id)) {return}
-	if ((drag_cards.childElementCount > 0) && (["drawed_cards"].includes(card.parentNode.id))) {return} // This will stop players from adding cards to the drawed_cards
+	// This will stop players from adding cards to the drawed_cards
+	if (["drawed_cards","gamemode", "container", "board_left", "draw_container", ""].includes(card.id)) {
+		if ((drag_cards.childElementCount > 0)) {
+			while (drag_cards.firstChild) {
+				move_card(drag_cards.firstChild, old_cont.id)
+			}
+		}
+		return
+	} 
 	// IF there is a card/s in the container then it will place them
-	console.log(card.parentNode.id)
 	if (drag_cards.childElementCount == 0) {
-		if (card.id.includes("set")) {return}
-		// If the player clicks a hidden card
-		if (card.className.includes("card_hidden")) {
-			if (!(card.parentElement.id.includes("draw_cards"))) {card.className = card.className.replace(" card_hidden", "")}
-			return
-		} 
+		if (card.id.includes("set")) {return} // This will stop the whole set of cards moving to the draggable items container
+		if (card.className.includes("finish_icon")) {return} // This stops the player from dragging the card finishing icon
 		// Makes a list of 
 		var set_list = Array.from(e.target.parentNode.children)
 		var index = set_list.indexOf(card)
-		console.log(index)
 		old_cont = card.parentNode
-		console.log(old_cont)
-		// Adds the card to the container
+		
+		// If the player clicks a hidden card it will show that card
+		if (card.className.includes("card_hidden")) {
+			if (!(card.parentElement.id.includes("draw_cards")) && (card.parentElement.lastChild.id.includes(card.id))) {
+				card.className = card.className.replace(" card_hidden", "")
+			}
+			return
+		} 
+		// Moves all the cards into the dragging_items container
 		for (var i=index; i < set_list.length; i++) {move_card(set_list[i].id, "dragging_items")}
 		return
 	}
-	// Returns the element to its old position
+	// Moves the cards to selected place
 	while (drag_cards.firstChild) {
 		check_set_card(drag_cards.firstChild, card)
 	}
@@ -154,8 +174,6 @@ function place_card(card, set, clss) {
 
 // Starts the Game 
 function start_game() {
-	// Randomizes the amount of times to randomize the cards
-	console.log(parseInt(Math.random() * 10) + 1)
 	shuffle(card_deck) // Ranomizes the Cards
 	// Places the cards on the board
 	for (var set = 1; set < 8; set++) {
@@ -172,20 +190,23 @@ function start_game() {
 	for (var crd = 0; crd < card_deck.length; crd++) { place_card(card_deck[0], `draw_cards`, "card card_hidden") }
 	// Interactables
 	draw_cards.onclick = function () { // If the player clicks the draw_cards elm
-		for (var i = 0; i < draw_amount; i++) {
-			// Moves the last top Card to the bottom cards
-			move_card(draw_cards.lastChild.id, "drawed_cards", "card") // Draws amount of cards
+		if (draw_cards.childElementCount !== 0) {
+			// If there are child elements in draw_cards then move the amount of cards need to be drawed
+			for (var i = 0; i < draw_amount; i++) {
+				// Moves the last top Card to the bottom cards
+				draw_cards.lastChild.className = "card"
+				move_card(draw_cards.lastChild, "drawed_cards", "card") // Draws amount of cards
+			}
+			return
 		}
-	}
-
-	drawed_cards.onclick = function () { // If the player clicks the drawed_cards elm
-		if (draw_cards.childElementCount == 0) { // If there are no cards in the elm
+		if (drag_cards.childElementCount == 0) { // This will not allow the player to return the cards if they have a card in hand
+			// Moves all the cards from drawed_cards back to the draw_cards contaienr
 			while (drawed_cards.childElementCount !== 0) {
-				move_card(drawed_cards.lastChild.id, "draw_cards", "card card_hidden") // retsets all the cards
+				drawed_cards.lastChild.className += " card_hidden"
+				move_card(drawed_cards.lastChild, "draw_cards") // retsets all the cards
 			}
 		}
 	}
-
 	// Allows the dragging_items box to follow the mouse at all times
 	$(document).on('mousemove', function(e){
 		$('#dragging_items').css({
