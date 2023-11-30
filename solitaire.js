@@ -59,7 +59,7 @@ function move_card(id, toElm) {
 	var spades = document.getElementById("spades")
 	var diamonds = document.getElementById("diamonds")
 	var clubs = document.getElementById("clubs")
-	console.log(hearts.childElementCount+spades.childElementCount+diamonds.childElementCount+clubs.childElementCount)
+	//console.log(hearts.childElementCount+spades.childElementCount+diamonds.childElementCount+clubs.childElementCount)
 	if (hearts.childElementCount+spades.childElementCount+diamonds.childElementCount+clubs.childElementCount == 56) {
 		win_game_screen()
 	}
@@ -68,7 +68,7 @@ function move_card(id, toElm) {
 // If the card was found to be overlapping a card set then it will check the card set to see if its placeable
 function check_set_card(elm, set, rtn) {
 	var elm_data = set.parentNode
-	console.log(elm, set, rtn)
+	//console.log(elm, set, rtn)
 	if (set.id.includes("set")) {elm_data = set}
 	// If the player moves a card into the finished cards elements
 	if (elm_data.className.includes("finish_card")) {
@@ -134,7 +134,7 @@ function clicked_card(e) {
 	}
 	// Moves the cards to selected place
 	if (drag_cards.firstChild) {
-		for (var i=0; i < drag_cards.childElementCount+1; i++) {check_set_card(drag_cards.firstChild, card)}
+		for (var i=drag_cards.childElementCount; i > 0; i--) {check_set_card(drag_cards.firstChild, card)}
 	}
 }
 
@@ -144,6 +144,7 @@ window.onload = function () {
 
 // Places the Card
 function place_card(card, set, clss) {
+	console.log(card)
 	// Places the card
 	var cardSet = document.getElementById(set)
 	var newCard = document.createElement("img")
@@ -157,6 +158,7 @@ function place_card(card, set, clss) {
 // Starts the Game 
 function start_game() {
 	shuffle(card_deck) // Ranomizes the Cards
+	console.log(card_deck)
 	// Places the cards on the board
 	for (var set = 1; set < 8; set++) {
 		for (var crd = 0; crd < set; crd++) { // If the card is not hidden
@@ -167,9 +169,13 @@ function start_game() {
 			place_card(card_deck[0], `set${set}`, "card card_hidden") // If the card is hidden
 		}
 	}
-
+	console.log(card_deck.length)
 	// Places the remaining cards in the draw_container
-	for (var crd = 0; crd < card_deck.length; crd++) { place_card(card_deck[0], `draw_cards`, "card card_hidden") }
+	for (var crd = card_deck.length; crd > 0; crd--) { 
+		console.log(card_deck.length)
+		console.log(crd)
+		place_card(card_deck[0], `draw_cards`, "card card_hidden") 
+	}
 	// Interactables
 	draw_cards.onclick = function () { // If the player clicks the draw_cards elm
 		if (draw_cards.childElementCount !== 0) {
