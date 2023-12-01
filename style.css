@@ -8,9 +8,7 @@ body {
     align-items: center;
 }
 
-a {
-    color:darkblue;
-}
+a {color:darkblue;}
 
 /* A Div used to move cards */
 #dragging_items { 
@@ -20,16 +18,18 @@ a {
     height:10%;
     max-width: 100%;
     max-height: 100%;
-    pointer-events: none
+    pointer-events: none;
 }
 
 #dragging_items > * {
     position: relative;
     display: flex;
     margin-top:-5.1em;
+    width:70px;
+    height:100px;
     justify-content: center;
     align-items: center;
-    top:5.05em;
+    top:5.1em;
     margin-left:50%;
     transform: translate(-50%);
 }
@@ -38,33 +38,32 @@ a {
 
 #draw_container {
     border: 1px solid black;
-    position: relative;
     display: flex;
     width: 100%;
     max-width: 100%;
     height: 200px;
     max-height: 100%;
-    margin-left:0%;
-    justify-content: center;
-    align-items: center;
+    place-items: center;
+	justify-content: center;
+	align-items: center;
 }
 
-#draw_container > * {
-    position: relative;
+.offhand {
     border:1px solid black;
     width:130px;
     max-width: 100%;
     height: 100px;
-    margin-right: 2em;
-    margin-left: 2em;
+    margin-right: 1em;
+    margin-left: 1em;
 }
 
 .offhand > * {
     position: relative;
     margin-top:-6.40em;
     top:6.30em;
-    margin-left:50%;
-    transform: translate(-50%)
+    margin-left:1.5em;
+    place-content: center;
+    justify-content: center;
 }
 
 /* Items on the board */
@@ -112,26 +111,50 @@ a {
 }
 
 #gameboard .card_set > * {
+    place-content: center;
     justify-content: center;
     align-items: center;
   	left: 50%;
-  	transform: translate(-50%);
 }
 
+/* Sets up the card and its elms */
 .card {
     position: relative;
     display: flex;
     border: 1px solid black;
     width: 70px;
     height:100px;
+    max-width: 100%;
+    max-height: 100%;
     box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
     border-radius: 10%;
     -webkit-user-drag: none; /* Stops the user from dragging the image and not the element */
+    background-color: white;
+    flex-wrap: wrap;
 }
+
+.card > * {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    margin-top:-.6em;
+    flex:40%;
+    font-size: 30px;
+    align-items: center;
+    justify-content: center;
+    -webkit-user-drag: none; /* Stops the user from dragging the image and not the element */
+    pointer-events: none;
+    user-select: none;
+}
+
+.card_suit_bottom { font-size: 80px;}
 
 .card_set .card {
     margin-top:-5.1em;
     top:100px;
+    margin-left:-2em;
 }
 
 /* All the Finished cards container */
@@ -162,6 +185,10 @@ a {
     margin-top: -2em;
     margin-left:50%;
     transform: translate(-50%);
+}
+
+.finish_card .card .card_num, .finish_card .card .card_suit_top  {
+    margin-top:-1.2em;
 }
 
 /* Finished Card Text Colors */

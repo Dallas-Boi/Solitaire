@@ -14,6 +14,10 @@ const check_Overlap = (elm1, elm2) => (elm1.right < elm2.left || elm1.left > elm
 var draw_amount = 1
 var cur_drag = null
 var old_cont = null
+var place_card = document.getElementById("set1")
+var select_elm = 0
+// The aniamation time line
+var timeline = anime.timeline();
 
 // Shuffles the given array
 function shuffle(array) {
@@ -46,23 +50,14 @@ function win_game_screen() {
 }
 
 // When the a card moves
-function move_card(id, toElm) {
-	var data_list = [id, toElm] // List of the data
+function move_card(elm, toElm) {
+	var data_list = [elm, toElm] // List of the data
 	// Checks
-	if (data_list[0].id) {data_list[0] = id.id} // Fixes the id arg being a object or str
-	if (data_list[1].id) {data_list[1] = toElm.id} // Fixes the toElm arg being a object or str
-	if ((drag_cards.childElementCount >= 0) && (["gamemode", "container", "board_left", "draw_container", "", "finished-cards"].includes(id))) {return} // This will stop players from grabbing the whole board
-	// Tries to move the card if failed then it will 
-	try {$(`#${data_list[0]}`).appendTo(`#${data_list[1]}`);} catch {return}
-	// Checks if the player has won the game
-	var hearts = document.getElementById("hearts")
-	var spades = document.getElementById("spades")
-	var diamonds = document.getElementById("diamonds")
-	var clubs = document.getElementById("clubs")
-	//console.log(hearts.childElementCount+spades.childElementCount+diamonds.childElementCount+clubs.childElementCount)
-	if (hearts.childElementCount+spades.childElementCount+diamonds.childElementCount+clubs.childElementCount == 56) {
-		win_game_screen()
-	}
+	if (!(elm.id)) {data_list[0] = document.getElementById(elm)} // Fixes the id arg being a object or str
+	if (!(toElm.id)) {data_list[1] = document.getElementById(toElm)} // Fixes the toElm arg being a object or str
+	if ((drag_cards.childElementCount >= 0) && (["gamemode", "container", "board_left", "draw_container", "", "finished-cards"].includes(elm))) {return} // This will stop players from grabbing the whole board
+	// Animates the Card Moving
+	$(`#${data_list[0].id}`).appendTo(`#${data_list[1].id}`)
 }
 
 // If the card was found to be overlapping a card set then it will check the card set to see if its placeable
@@ -143,38 +138,52 @@ window.onload = function () {
 }
 
 // Places the Card
-function place_card(card, set, clss) {
-	console.log(card)
-	// Places the card
-	var cardSet = document.getElementById(set)
-	var newCard = document.createElement("img")
-	newCard.id = card
-	newCard.src = `cards/${card}.jpg`
-	newCard.className = clss
-	cardSet.appendChild(newCard)
+function make_card(card, set, clss) {
+	// Sets the card Suit
+	var suit;
+	var cardClass = clss
+	if (card[card.length-1] == "H") {suit = "♥️"}
+	else if (card[card.length-1] == "S") {suit = "♠️"}
+	else if (card[card.length-1] == "D") {suit = "♦️"}
+	else if (card[card.length-1] == "C") {suit = "♣️"}
+	if (!(clss)) {cardClass = "card"}
+	// Makes the card
+	var thisCard = document.createElement("div") // The card
+	thisCard.id=card
+	thisCard.className = cardClass
+	var cardNum = document.createElement("div") // The Card Number
+	cardNum.className = `card_num color_${getCardSetColor(card[card.length-1])}`
+	cardNum.textContent = card[0]
+	if (card[1] == "0") {cardNum.textContent = "10"}
+	var cardSuitT = document.createElement("div") // The Card Suit Top
+	cardSuitT.className = `card_suit_top color_${getCardSetColor(card[card.length-1])}`
+	cardSuitT.textContent = suit
+	var cardSuitB = document.createElement("div") // The Card Suit Bottom
+	cardSuitB.className = `card_suit_bottom color_${getCardSetColor(card[card.length-1])}`
+	cardSuitB.textContent = suit
+	// Adds it to the card
+	thisCard.appendChild(cardNum)
+	thisCard.appendChild(cardSuitT)
+	thisCard.appendChild(cardSuitB)
+	// Card is added to the board
+	draw_cards.appendChild(thisCard)
 	card_deck.splice(0, 1) // Removes the first card in the deck
 }
 
 // Starts the Game 
 function start_game() {
 	shuffle(card_deck) // Ranomizes the Cards
-	console.log(card_deck)
-	// Places the cards on the board
-	for (var set = 1; set < 8; set++) {
-		for (var crd = 0; crd < set; crd++) { // If the card is not hidden
-			if (crd + 1 == set) {
-				place_card(card_deck[0], `set${set}`, "card");
-				continue
-			}
-			place_card(card_deck[0], `set${set}`, "card card_hidden") // If the card is hidden
-		}
-	}
-	console.log(card_deck.length)
-	// Places the remaining cards in the draw_container
+	// Places the cards in the draw_container
 	for (var crd = card_deck.length; crd > 0; crd--) { 
-		console.log(card_deck.length)
-		console.log(crd)
-		place_card(card_deck[0], `draw_cards`, "card card_hidden") 
+		make_card(card_deck[0], `draw_cards`, "card card_hidden") 
+	}
+	console.log(card_deck)
+	// Moves the element to the board
+	for (var set=1; set < 8; set++) {
+		for (var crd=0; crd < set; crd++) {
+			move_card(draw_cards.children[crd], `set${set}`)
+		}
+		document.getElementById(`set${set}`).lastChild.className = document.getElementById(`set${set}`).lastChild.className.replace(" card_hidden", "")
 	}
 	// Interactables
 	draw_cards.onclick = function () { // If the player clicks the draw_cards elm
@@ -206,4 +215,3 @@ function start_game() {
 }
 
 start_game()
-
