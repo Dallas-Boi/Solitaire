@@ -1,14 +1,5 @@
 /* Made Friday, November 17th, 2023 */
-body {
-    background-color: green;
-    overflow: hidden;
-    flex-flow: column wrap;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-a {color:darkblue;}
+/* Made for the styling for Solitaire */
 
 /* A Div used to move cards */
 #dragging_items { 
@@ -24,14 +15,14 @@ a {color:darkblue;}
 #dragging_items > * {
     position: relative;
     display: flex;
-    margin-top:-5.1em;
+    margin-top:-4.6em;
     width:70px;
     height:100px;
     max-width:100%;
     max-height:100%;
     justify-content: center;
     align-items: center;
-    top:5.1em;
+    top:4em;
     margin-left:50%;
     transform: translate(-50%);
 }
@@ -119,42 +110,8 @@ a {color:darkblue;}
   	left: 50%;
 }
 
-/* Sets up the card and its elms */
-.card {
-    position: relative;
-    display: flex;
-    border: 1px solid black;
-    width: 70px;
-    height:100px;
-    max-width: 100%;
-    max-height: 100%;
-    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
-    border-radius: 10%;
-    -webkit-user-drag: none; /* Stops the user from dragging the image and not the element */
-    background-color: white;
-    flex-wrap: wrap;
-}
-
-.card > * {
-    display: flex;
-    width: 100%;
-    height: 100%;
-    max-width: 100%;
-    max-height: 100%;
-    margin-top:-.6em;
-    flex:40%;
-    font-size: 30px;
-    align-items: center;
-    justify-content: center;
-    -webkit-user-drag: none; /* Stops the user from dragging the image and not the element */
-    pointer-events: none;
-    user-select: none;
-}
-
-.card_suit_bottom { font-size: 80px;}
-
 .card_set .card {
-    margin-top:-5.1em;
+    margin-top:-4.6em;
     top:100px;
     margin-left:-2em;
 }
@@ -192,33 +149,3 @@ a {color:darkblue;}
 .finish_card .card .card_num, .finish_card .card .card_suit_top, #dragging_items .card .card_suit_top, #dragging_items .card .card_num  {
     margin-top:-1.15em;
 }
-
-/* Finished Card Text Colors */
-.color_red {color: red;}
-.color_black {color: black;}
-
-/* Hidden Cards */
-.card_hidden { content: url("./cards/purple_back.jpg"); }
-
-/* Items off the board */
-#header {
-    position: fixed;
-    border: 3px solid black;
-    left: 0;
-    top: 0;
-    width: 100%;
-    max-width: 100%;
-    height: 70px;
-    max-height: 100%;
-    background-color: rgb(0, 100, 0);
-    color: white;
-    text-align: center;
-}
-
-#header > * {
-    position: relative;
-    font-weight: bold;
-    top:50%;
-    transform: translate(0%, -50%)
-}
-

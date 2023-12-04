@@ -1,0 +1,44 @@
+<!-- Made Friday, November 17th, 2023 -->
+<html>
+    <head>
+        <title> - Solitaire - </title>
+        <link rel="stylesheet" href="/stylesheets/solitaire.css">
+        <link rel="stylesheet" href="/stylesheets/main.css">
+        <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+        <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js" integrity="sha256-xLD7nhI62fcsEZK2/v8LsBcb4lG7dgULkuXoXB/j91c=" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/animejs@3.0.1/lib/anime.min.js"></script>
+    </head>
+    <body>
+        <div id="header">
+            <a href="/index.html">Home</a>
+            <a href="/pages/soliaire.html">Solitaire</a>
+        </div>
+        <div id="dragging_items"></div>
+        <div id="container">
+            <div id="gameboard">
+                <div id="set1" class="card_set"></div>
+                <div id="set2" class="card_set"></div>
+                <div id="set3" class="card_set"></div>
+                <div id="set4" class="card_set"></div>
+                <div id="set5" class="card_set"></div>
+                <div id="set6" class="card_set"></div>
+                <div id="set7" class="card_set"></div>
+            </div>
+            <div id="board_left">
+                <div id="draw_container">
+                    <div id="draw_cards" class="offhand"></div>
+                    <div id="drawed_cards" class="offhand"></div>
+                </div>
+                <div id="finished-cards">
+                    <div id="hearts" class="finish_card color_red"><div id="2h" class="finish_icon">♥️</div></div>
+                    <div id="spades" class="finish_card color_black"><div id="2s" class="finish_icon">♠️</div></div>
+                    <div id="diamonds" class="finish_card color_red"><div id="2d" class="finish_icon">♦️</div></div>
+                    <div id="clubs" class="finish_card color_black"><div id="2c" class="finish_icon">♣️</div></div>
+                </div>
+            </div>
+        </div>
+        <script src="/scripts/main.js"></script>
+        <script src="/scripts/solitaire.js"></script>
+        
+    </body>
+</htm>
