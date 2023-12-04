@@ -1,0 +1,43 @@
+<html>
+    <!-- Made December 4th, 2023 -->
+    <head>
+        <title>- BlackJack -</title>
+        <link rel="stylesheet" href="/stylesheets/blackjack.css">
+        <linK rel="stylesheet" href="/stylesheets/main.css">
+        <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+        <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js" integrity="sha256-xLD7nhI62fcsEZK2/v8LsBcb4lG7dgULkuXoXB/j91c=" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/animejs@3.0.1/lib/anime.min.js"></script>
+    </head>
+    <body>
+        <div id="header">
+            <a href="/index.html">Home</a>
+        </div>
+        <div id="gameboard">
+            <div id="game_information">
+                <div id="pot_info"></div>
+                <div id="turn_label"></div>
+            </div>
+            <div id="players_container">
+                <div id="player1" class="player">
+                    <div id="p1_cards"></div>
+                    <div id="p1_bet"></div>
+                </div>
+                <div id="player2" class="player">
+                    <div id="p2_cards"></div>
+                    <div id="p2_bet"></div>
+                </div>
+            </div>
+            <div id="chips_container">
+                <buttom id="chip10" class="chip"><p>$10</p></buttom>
+                <buttom id="chip25" class="chip"><p>$25</p></buttom>
+                <buttom id="chip100" class="chip"><p>$100</p></buttom>
+                <buttom id="chip500" class="chip"><p>$250</p></buttom>
+                <buttom id="chip1500" class="chip"><p>$1500</p></buttom>
+                <buttom id="chip5000" class="chip"><p>$5000</p></buttom>
+                <buttom id="chip7500" class="chip"><p>$7500</p></buttom>
+            </div>
+        </div>
+        <script src="/scripts/main.js"></script>
+        <script src="/scripts/blackjack.js"></script>
+    </body>
+</html>

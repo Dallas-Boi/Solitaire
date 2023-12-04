@@ -1,0 +1,56 @@
+/* Made Demeber 4th, 2023 */
+
+#gameboard {
+    margin-top:5em;
+    height:38em;
+    width: 99%;
+    max-height: 99%;
+    max-width: 99%;
+    border: 1px solid black;
+}
+
+#game_information {
+    border: 1px solid purple;
+    height: 5em;
+}
+
+#players_container {
+    border: 1px solid purple;
+    height: 27.75em;
+    display: flex;
+    justify-content: center;
+}
+
+.player {
+    display: inline-block;
+    border: 1px solid white;
+    width:47em;
+    height: 27.7em;
+}
+
+#chips_container {
+    border: 1px solid purple;
+    height: 5em;
+    display: flex;
+    justify-content: center;
+}
+
+.chip {
+    display: flex;
+    position: relative;
+    background-color: white;
+    border-radius: 100%;
+    width: 5em;
+    height: 5em;
+    
+    text-align: center;
+    border: 1px solid black;
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+}
+
+.chip > * {
+    flex: 1;
+    line-height: 2.5;
+    display: inline-block;
+    vertical-align: middle;
+}
