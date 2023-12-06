@@ -2,8 +2,8 @@
     <!-- Made December 4th, 2023 -->
     <head>
         <title>- BlackJack -</title>
-        <link rel="stylesheet" href="/stylesheets/blackjack.css">
         <linK rel="stylesheet" href="/stylesheets/main.css">
+        <link rel="stylesheet" href="/stylesheets/blackjack.css">
         <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
         <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js" integrity="sha256-xLD7nhI62fcsEZK2/v8LsBcb4lG7dgULkuXoXB/j91c=" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/animejs@3.0.1/lib/anime.min.js"></script>
@@ -12,29 +12,42 @@
         <div id="header">
             <a href="/index.html">Home</a>
         </div>
+        <div id="notification" hidden>
+            <div id="notif_txt"></div>
+        </div>
         <div id="gameboard">
             <div id="game_information">
-                <div id="pot_info"></div>
-                <div id="turn_label"></div>
+                <div id="pot_info" >Winning Pot: $<b id="pot">0</b></div>
+                <div id="turn_label">Current Turn: <b id="player">Player 1</b></div>
             </div>
             <div id="players_container">
                 <div id="player1" class="player">
-                    <div id="p1_cards"></div>
-                    <div id="p1_bet"></div>
+                    <div id="p1_cash" class="pCash">Cash: $<b id="p1_cash_val">0</b></div>
+                    <div id="p1_bet" class="bets">Betting: $<b id="p1_pot">0</b></div>
+                    <div id="p1_cards" class="cards"></div>
                 </div>
                 <div id="player2" class="player">
-                    <div id="p2_cards"></div>
-                    <div id="p2_bet"></div>
+                    <div id="p2_cash" class="pCash">Cash: $<b id="p2_cash_val">0</b></div>
+                    <div id="p2_bet" class="bets">Betting: $<b id="p2_pot">0</b></div>
+                    <div id="p2_cards" class="cards"></div>
                 </div>
             </div>
-            <div id="chips_container">
-                <buttom id="chip10" class="chip"><p>$10</p></buttom>
-                <buttom id="chip25" class="chip"><p>$25</p></buttom>
-                <buttom id="chip100" class="chip"><p>$100</p></buttom>
-                <buttom id="chip500" class="chip"><p>$250</p></buttom>
-                <buttom id="chip1500" class="chip"><p>$1500</p></buttom>
-                <buttom id="chip5000" class="chip"><p>$5000</p></buttom>
-                <buttom id="chip7500" class="chip"><p>$7500</p></buttom>
+            <div id="action_container">
+                <div id="chips_container">
+                    <button id="chip1" class="action" style="background-color: aqua;"><p>$1</p></button>
+                    <button id="chip10" class="action" style="background-color: red;"><p>$10</p></button>
+                    <button id="chip25" class="action" style="background-color: lime"><p>$25</p></button>
+                    <button id="chip100" class="action" style="background-color: green"><p>$100</p></button>
+                    <button id="chip250" class="action" style="background-color: purple;"><p>$250</p></button>
+                    <button id="chip1500" class="action" style="background-color: grey;"><p>$1500</p></button>
+                    <button id="chip5000" class="action" style="background-color: yellow;"><p>$5000</p></button>
+                    <button id="chip7500" class="action" style="background-color: orange;"><p>$7500</p></button>
+                    <button id="chipPlay" class="action" style="background-color: burlywood;"><p>Play</p></button>
+                </div>
+                <div id="play_container" style="display: none;">
+                    <button id="hit_btn" class="action" style="background-color:lime"><p>Hit</p></button>
+                    <button id="stand_btn" class="action" style="background-color:Red"><p>Stand</p></button>
+                </div>
             </div>
         </div>
         <script src="/scripts/main.js"></script>

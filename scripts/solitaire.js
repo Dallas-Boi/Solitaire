@@ -1,4 +1,5 @@
 // Made Friday, November 17th, 2023
+
 // Main Values
 const divChange_event = [] // This will hold all observe events for set_top
 const draw_cards = document.getElementById("draw_cards")
@@ -111,11 +112,6 @@ function clicked_card(e) {
 
 window.onload = function () {
 	document.onmousedown = clicked_card
-}
-
-// Places the Card
-function place_card() {
-	
 }
 
 // Starts the Game 

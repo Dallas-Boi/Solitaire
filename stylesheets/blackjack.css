@@ -8,12 +8,21 @@
     max-width: 99%;
     border: 1px solid black;
 }
-
+/* Handles all game information */
 #game_information {
     border: 1px solid purple;
     height: 5em;
 }
 
+#game_information > * {
+    display: flex;
+    justify-content: center;
+    position: relative;
+    font-size: 30px;
+    margin-top: 3px;
+}
+
+/* Handles all player elements */
 #players_container {
     border: 1px solid purple;
     height: 27.75em;
@@ -23,34 +32,90 @@
 
 .player {
     display: inline-block;
-    border: 1px solid white;
     width:47em;
     height: 27.7em;
+    border-right: 1px dotted white;
+}
+.player > * {
+    border:1px solid red;
+    display: flex;
+    justify-content: center;
+    position: relative;
+    height:1em;
 }
 
-#chips_container {
+.bets, .pCash {
+    top:1em;
+    font-size: 30px;
+}
+
+.pCash { top:0.5em; }
+
+.cards {
+    top:3em;
+    height:20.75em;
+}
+
+.card { 
+    top:3em;
+    margin-left: -2em;
+}
+
+.card > *{
+    position: relative;
+    margin-top: -.6em;
+}
+
+.card_num, .card_suit_top { margin-top:-1.25em; }
+
+/* Handles all chip styles */
+#action_container {
     border: 1px solid purple;
     height: 5em;
+}
+
+#action_container > * {
     display: flex;
     justify-content: center;
 }
 
-.chip {
+.action {
+    top:0.5em;
     display: flex;
     position: relative;
     background-color: white;
     border-radius: 100%;
     width: 5em;
     height: 5em;
-    
     text-align: center;
     border: 1px solid black;
     box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
 }
 
-.chip > * {
+.action > * {
     flex: 1;
     line-height: 2.5;
     display: inline-block;
     vertical-align: middle;
+}
+
+/* Notification css */
+#notification {
+    position: absolute;
+    z-index: 2;
+    max-width: 100%;
+    max-height: 100%;
+    background-color: black;
+    border-radius: 10%;
+}
+
+#notification > * {
+    display: flex;
+    justify-content: center;
+    width:200px;
+    height:50px;
+    color:white;
+    justify-content: center;
+    align-items: center;
+    vertical-align: center;
 }
