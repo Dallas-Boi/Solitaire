@@ -44,7 +44,7 @@
     height:1em;
 }
 
-.bets, .pCash {
+.bets, .pCash, .card_val {
     top:1em;
     font-size: 30px;
 }
@@ -53,8 +53,10 @@
 
 .cards {
     top:3em;
-    height:20.75em;
+    height:18em;
 }
+
+.card_val { top:1.8em; }
 
 .card { 
     top:3em;
@@ -77,6 +79,7 @@
 #action_container > * {
     display: flex;
     justify-content: center;
+    gap: 20px;
 }
 
 .action {
@@ -100,7 +103,7 @@
 }
 
 /* Notification css */
-#notification {
+#notifications {
     position: absolute;
     z-index: 2;
     max-width: 100%;
@@ -109,7 +112,7 @@
     border-radius: 10%;
 }
 
-#notification > * {
+#notifications > * {
     display: flex;
     justify-content: center;
     width:200px;

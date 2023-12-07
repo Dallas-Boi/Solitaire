@@ -8,6 +8,7 @@ const turnTxt = document.getElementById("player")
 const chips = document.getElementById("chips_container")
 const playing = document.getElementById("play_container")
 const pot_info = document.getElementById("pot")
+const noti_container = document.getElementById("notifications")
 // Betting Buttons
 const chip1 = document.getElementById("chip1")
 const chip10 = document.getElementById("chip10")
@@ -24,7 +25,7 @@ const stand_btn = document.getElementById("stand_btn")
 
 // The player class
 class Player {
-    constructor(name, cash, bet, cards, cash_elm, pot_elm, card_elm) {
+    constructor(name, cash, bet, cards, cash_elm, pot_elm, card_elm, card_val_elm) {
         this.name = name
         this.cash = cash
         this.bet = bet
@@ -32,6 +33,7 @@ class Player {
         this.cash_elm = cash_elm
         this.pot_elm = pot_elm
         this.card_elm = card_elm
+        this.card_val_elm = card_val_elm
     }
     // Player data
     get_player_name() {return this.name}
@@ -67,26 +69,33 @@ class Player {
     // Cards
     get_player_cards() {return this.cards}
     add_player_cards(card) {
-        console.log(card)
+        card.style.top = "-500"
+        // Starts an animation
+        anime({
+            targets: card,
+            top: 48,
+            rotateX: 360
+        });
         this.cards.push(card)
         this.card_elm.appendChild(card)
+        this.card_val_elm.textContent = this.get_player_total_val()
     }
     // Returns the players total card values
     get_player_total_val() {
         var total = 0
-        console.log(this.cards)
         for (var i=0; i < this.cards.length; i++) {
-            console.log(convertLetter_toNumber_blackJack(this.cards[i].id))
             total += convertLetter_toNumber_blackJack(this.cards[i].id)
         }
         return total
     }
+    // This will reset the player for the next round
     reset_player() {
         this.cards = []
         this.set_player_bet(0)
         pot_info.textContent = 0
         this.pot_elm.textContent = 0
-        this.card_elm.innterHTML = ""
+        this.card_elm.innerHTML = ""
+        this.card_val_elm.textContent = 0
     }
 }
 
@@ -98,15 +107,20 @@ function find_highest(array, rtn) {
     // Finds the highest number
     var high = 0
     var index = 0
+    var push = true
     for (var i=0; i < array.length; i++) {
         // Checks if the highest current number is less than the given value
         if (high < array[i]) {
             high = array[i]
             index = i
+            push = false
+        } else if (high == array[i]) {
+            push = true
         }
     }
     // returns the rtn value
-    if (rtn == "number") { return high }
+    if (push == true) {return 99}
+    else if (rtn == "number") { return high }
     else if (rtn == "index") {return index}
 }
 
@@ -119,11 +133,19 @@ function convertLetter_toNumber_blackJack(letter) {
 
 // Sends a notification
 function send_noti(message) {
-    document.getElementById("notif_txt").innerHTML = message
-    $("#notification").fadeIn()
+    var noti = document.createElement("div")
+    noti.id = `notif_txt_${noti_container.childElementCount}`
+    noti.innerHTML = message
+    noti.style.display = "none"
+    noti_container.appendChild(noti)
+    $(`#notif_txt_${noti_container.childElementCount-1}`).fadeIn()
     setTimeout(function() {
-        $("#notification").fadeOut()
+        $(`#notif_txt_${noti_container.childElementCount-1}`).fadeOut()
     }, 1500)
+    setTimeout(function() {
+        document.getElementById(`notif_txt_${noti_container.childElementCount-1}`).remove()
+    }, 2500)
+        
 }
 
 // When called this will end the current round and do the need calculations
@@ -131,12 +153,20 @@ function end_current_round(winner) {
     chips.style.display = "flex"
     playing.style.display = "none"
     // Gives the winner the money
-    players[winner].add_player_cash(pot)
-    pot = 0
-    // Sets up everything for the next round
-    for (var i=0; i < players.length; i++) {
-        players[i].reset_player()
+    if (winner !== 99) { // If it was not a push
+        players[winner].add_player_cash(pot)
+        send_noti(`The Winner is Player ${winner+1}`)
+    } else { // if was a push
+        send_noti("It was a push")
     }
+    setTimeout(function() {
+        // Sets up everything for the next round
+        for (var i=0; i < players.length; i++) {
+            if (winner == 99) { players[i].remove_player_bet(players[i].get_player_bet())}
+            players[i].reset_player()
+        }
+        change_turn("ppo")
+    }, 2000)
 }
 
 // Changes the current turn
@@ -144,15 +174,7 @@ function change_turn(arg) {
     // If the player did not set any bet
     if ((arg == "betting") && (players[current_turn].get_player_bet() <= 0)) { return } 
     if (arg == "bust") {
-        console.log(`Player ${current_turn+1} Busted`)
-        end_current_round()
-        return
-    }   
-    // Checks if the arg is "betting"
-    current_turn += 1
-    if (current_turn > players.length-1) {
-        if (arg) {current_turn = 0}
-        // This will check who is the winner
+        send_noti(`Player ${current_turn+1} Busted`)
         var harray = []
         for (var i=0; i < players.length; i++) {
             if (players[i].get_player_total_val() <= 21) {
@@ -163,23 +185,38 @@ function change_turn(arg) {
         }
         end_current_round(find_highest(harray, "index"))
         return
+    }   
+    
+    current_turn += 1
+    if (current_turn > players.length-1) {
+        if (arg) {current_turn = 0}
+        else {
+            // This will check who is the winner
+            var harray = []
+            for (var i=0; i < players.length; i++) {
+                if (players[i].get_player_total_val() <= 21) {
+                    harray.push(players[i].get_player_total_val())
+                    continue
+                }
+                harray.push(0)
+            }
+            end_current_round(find_highest(harray, "index"))
+            return
+        }
     } 
     // Resets the players back to zero
     turnTxt.textContent = ` Player ${current_turn+1}`
     send_noti(`It is now Player ${current_turn+1} Turn`)
+    // Checks if the arg is "betting"
     if (arg == "betting") {
-        if (current_turn != 0) {allow_bet();return}
-        chips.style.display = "none"
-        playing.style.display = "flex"
+        if (current_turn+1 == players.length) {allow_bet();return}
+        chips.style.display = "none" // Hides Chips
+        playing.style.display = "flex" // Shows the action btns
         // Gives the players their cards
         play_card(0);play_card(0);
         play_card(1);play_card(1)
         hit_btn.onclick = function() { play_card(current_turn) }
-        stand_btn.onclick = function() {
-            if (current_turn+1 != players.length) {change_turn(arg);return}
-            change_turn()
-        }   
-        
+        stand_btn.onclick = change_turn
     }
 }
 
@@ -191,7 +228,6 @@ function play_card(player) {
     // Resets the deck if the deck has all the played cards
     if (played_cards.length > 51) {played_cards = []}
     // Checks if the total of this players cards is 21 or under
-    console.log(players[current_turn].get_player_total_val())
     if (players[current_turn].get_player_total_val() > 21) {
         change_turn("bust")
         return
@@ -200,91 +236,61 @@ function play_card(player) {
 // Updates the text for adding the bet
 function add_bet(player, amount) {
     players[player].add_player_bet(amount)
-    console.log(players[player].get_player_cash())
     allow_bet()
 }
 
 // Disables the chips btns
 function disable_chips() {
-    chip1.disabled = "disabled"
-    chip10.disabled = "disabled"
-    chip25.disabled = "disabled"
-    chip100.disabled = "disabled"
-    chip250.disabled = "disabled"
-    chip1500.disabled = "disabled"
-    chip5000.disabled = "disabled"
-    chip7500.disabled = "disabled"
+    chip1.style.display = "none"
+    chip10.style.display = "none"
+    chip25.style.display = "none"
+    chip100.style.display = "none"
+    chip250.style.display = "none"
+    chip1500.style.display = "none"
+    chip5000.style.display = "none"
+    chip7500.style.display = "none"
 }
 
 // Allows the betting process
 function allow_bet() {
     disable_chips()
-    // Checks if the player can bet that chip
-    if (players[current_turn].get_player_cash() >= 7500) {
-        chip1.disabled = ""
-        chip10.disabled = ""
-        chip25.disabled = ""
-        chip100.disabled = ""
-        chip250.disabled = ""
-        chip1500.disabled = ""
-        chip5000.disabled = ""
-        chip7500.disabled = ""
-    } else if (players[current_turn].get_player_cash() >= 5000) {
-        chip1.disabled = ""
-        chip10.disabled = ""
-        chip25.disabled = ""
-        chip100.disabled = ""
-        chip250.disabled = ""
-        chip1500.disabled = ""
-        chip5000.disabled = ""
-    } else if (players[current_turn].get_player_cash() >= 1500) {
-        chip1.disabled = ""
-        chip10.disabled = ""
-        chip25.disabled = ""
-        chip100.disabled = ""
-        chip250.disabled = ""
-        chip1500.disabled = ""
-    } else if (players[current_turn].get_player_cash() >= 250) {
-        chip1.disabled = ""
-        chip10.disabled = ""
-        chip25.disabled = ""
-        chip100.disabled = ""
-        chip250.disabled = ""
-    } else if (players[current_turn].get_player_cash() >= 100) {
-        chip1.disabled = ""
-        chip10.disabled = ""
-        chip25.disabled = ""
-        chip100.disabled = ""
-    } else if (players[current_turn].get_player_cash() >= 25) {
-        chip1.disabled = ""
-        chip10.disabled = ""
-        chip25.disabled = ""
-    } else if (players[current_turn].get_player_cash() >= 15) {
-        chip1.disabled = ""
-        chip10.disabled = ""
-    } else if (players[current_turn].get_player_cash() >= 1) {
-        chip1.disabled = ""
+    var i=0 
+    var chipCost = ["1","10","25","100","250","1500","5000","7500"]
+    while (i < chips.childElementCount) {
+        var child = chips.children[i]
+        var childAct = child.id.replace("chip", "")
+        // Checks the chip action
+        if (childAct == "Play") { child.onclick = function() { change_turn("betting") } }
+        else if (chipCost.includes(childAct)) {
+            // Checks if the player has enough money for the bet
+            if (!(parseInt(childAct) > players[current_turn].get_player_cash())) {
+                child.onclick = function() { add_bet(current_turn, parseInt(childAct))}
+                child.style.display = "flex"
+            }
+        }
+        i++
     }
-
-    chip10.onclick = function() { add_bet(current_turn, 10) }
-    chip25.onclick = function() { add_bet(current_turn, 25) }
-    chip100.onclick = function() { add_bet(current_turn, 100) }
-    chip250.onclick = function() { add_bet(current_turn, 250) }
-    chip1500.onclick = function() { add_bet(current_turn, 1500) }
-    chip5000.onclick = function() { add_bet(current_turn, 5000) }
-    chip7500.onclick = function() { add_bet(current_turn, 7500) }
-    chipPlay.onclick = function() { change_turn("betting") }
 }
+
+// When the client hovers over a button with the action class
+$(".action").hover(function(e) {
+    var scaleNum = 1
+    if (e.type == "mouseenter") { scaleNum = 1.5 } // If the client hovers over the btn
+
+    anime({
+        targets: e.currentTarget,
+        scale: scaleNum,
+        rotate: '1turn'
+    });
+})
 
 // Starts a game
 function start_new_game() {
     // Makes the players
     for (var i=0; i < 2; i++) { 
-        players.push(new Player(`player${i}`, 1000, 0, [], document.getElementById(`p${i+1}_cash_val`), document.getElementById(`p${i+1}_pot`), document.getElementById(`p${i+1}_cards`))) 
+        players.push(new Player(`player${i}`, 1000, 0, [], document.getElementById(`p${i+1}_cash_val`), document.getElementById(`p${i+1}_pot`), document.getElementById(`p${i+1}_cards`), document.getElementById(`p${i+1}_card_val`))) 
         document.getElementById(`p${i+1}_cash_val`).textContent = 1000
     }
-    console.log(card_deck)
-    console.log(played_cards)
     allow_bet()
 }
 
