@@ -20,8 +20,8 @@ const chip5000 = document.getElementById("chip5000")
 const chip7500 = document.getElementById("chip7500")
 const chipPlay = document.getElementById("chipPlay")
 // Action Buttons
-const hit_btn = document.getElementById("hit_btn")
-const stand_btn = document.getElementById("stand_btn")
+const hit_btn = document.getElementById("chipHit")
+const stand_btn = document.getElementById("chipStand")
 
 // The player class
 class Player {
@@ -64,7 +64,9 @@ class Player {
         this.add_player_cash(amount)
         this.pot_elm.textContent = this.bet
     }
-    set_player_bet(amount) {this.bet = amount} 
+    set_player_bet(amount) {
+        this.bet = amount
+    } 
 
     // Cards
     get_player_cards() {return this.cards}
@@ -74,11 +76,14 @@ class Player {
         anime({
             targets: card,
             top: 48,
-            rotateX: 360
+            duration: 800,
         });
+        // Starts backend stuff
         this.cards.push(card)
         this.card_elm.appendChild(card)
         this.card_val_elm.textContent = this.get_player_total_val()
+        
+        
     }
     // Returns the players total card values
     get_player_total_val() {
@@ -92,6 +97,7 @@ class Player {
     reset_player() {
         this.cards = []
         this.set_player_bet(0)
+        pot = 0
         pot_info.textContent = 0
         this.pot_elm.textContent = 0
         this.card_elm.innerHTML = ""
@@ -134,24 +140,41 @@ function convertLetter_toNumber_blackJack(letter) {
 // Sends a notification
 function send_noti(message) {
     var noti = document.createElement("div")
-    noti.id = `notif_txt_${noti_container.childElementCount}`
     noti.innerHTML = message
-    noti.style.display = "none"
     noti_container.appendChild(noti)
-    $(`#notif_txt_${noti_container.childElementCount-1}`).fadeIn()
-    setTimeout(function() {
-        $(`#notif_txt_${noti_container.childElementCount-1}`).fadeOut()
-    }, 1500)
-    setTimeout(function() {
-        document.getElementById(`notif_txt_${noti_container.childElementCount-1}`).remove()
-    }, 2500)
-        
+    noti.style.transform = "scale(0)"
+    anime({
+        targets: noti,
+        scale: 1,
+        endDelay: 1000,
+        complete: function() {
+            anime({
+                targets: noti,
+                easing: 'easeInOutExpo',
+                scale: 0,
+                complete: function() {
+                    noti.remove()
+                }
+            }) 
+        }
+    })
+     
 }
 
 // When called this will end the current round and do the need calculations
-function end_current_round(winner) {
+function end_current_round() {
     chips.style.display = "flex"
     playing.style.display = "none"
+    // Finds the highest num
+    var harray = []
+    for (var i=0; i < players.length; i++) {
+        if (players[i].get_player_total_val() <= 21) {
+            harray.push(players[i].get_player_total_val())
+            continue
+        }
+        harray.push(0)
+    }
+    var winner = find_highest(harray, "index")
     // Gives the winner the money
     if (winner !== 99) { // If it was not a push
         players[winner].add_player_cash(pot)
@@ -165,7 +188,8 @@ function end_current_round(winner) {
             if (winner == 99) { players[i].remove_player_bet(players[i].get_player_bet())}
             players[i].reset_player()
         }
-        change_turn("ppo")
+        current_turn = 0
+        allow_bet()
     }, 2000)
 }
 
@@ -173,36 +197,13 @@ function end_current_round(winner) {
 function change_turn(arg) {
     // If the player did not set any bet
     if ((arg == "betting") && (players[current_turn].get_player_bet() <= 0)) { return } 
-    if (arg == "bust") {
-        send_noti(`Player ${current_turn+1} Busted`)
-        var harray = []
-        for (var i=0; i < players.length; i++) {
-            if (players[i].get_player_total_val() <= 21) {
-                harray.push(players[i].get_player_total_val())
-                continue
-            }
-            harray.push(0)
-        }
-        end_current_round(find_highest(harray, "index"))
-        return
-    }   
+    // If a player busted then it will try to find the highest number
+    else if (arg == "bust") {send_noti(`Player ${current_turn+1} Busted`);end_current_round();return}   
     
     current_turn += 1
     if (current_turn > players.length-1) {
         if (arg) {current_turn = 0}
-        else {
-            // This will check who is the winner
-            var harray = []
-            for (var i=0; i < players.length; i++) {
-                if (players[i].get_player_total_val() <= 21) {
-                    harray.push(players[i].get_player_total_val())
-                    continue
-                }
-                harray.push(0)
-            }
-            end_current_round(find_highest(harray, "index"))
-            return
-        }
+        else {end_current_round();return}
     } 
     // Resets the players back to zero
     turnTxt.textContent = ` Player ${current_turn+1}`
@@ -215,8 +216,6 @@ function change_turn(arg) {
         // Gives the players their cards
         play_card(0);play_card(0);
         play_card(1);play_card(1)
-        hit_btn.onclick = function() { play_card(current_turn) }
-        stand_btn.onclick = change_turn
     }
 }
 
@@ -228,10 +227,7 @@ function play_card(player) {
     // Resets the deck if the deck has all the played cards
     if (played_cards.length > 51) {played_cards = []}
     // Checks if the total of this players cards is 21 or under
-    if (players[current_turn].get_player_total_val() > 21) {
-        change_turn("bust")
-        return
-    }
+    if (players[current_turn].get_player_total_val() > 21) {change_turn("bust");return}
 }
 // Updates the text for adding the bet
 function add_bet(player, amount) {
@@ -260,13 +256,9 @@ function allow_bet() {
         var child = chips.children[i]
         var childAct = child.id.replace("chip", "")
         // Checks the chip action
-        if (childAct == "Play") { child.onclick = function() { change_turn("betting") } }
-        else if (chipCost.includes(childAct)) {
+        if (chipCost.includes(childAct)) {
             // Checks if the player has enough money for the bet
-            if (!(parseInt(childAct) > players[current_turn].get_player_cash())) {
-                child.onclick = function() { add_bet(current_turn, parseInt(childAct))}
-                child.style.display = "flex"
-            }
+            if (!(parseInt(childAct) > players[current_turn].get_player_cash())) {child.style.display = "flex"}
         }
         i++
     }
@@ -276,12 +268,20 @@ function allow_bet() {
 $(".action").hover(function(e) {
     var scaleNum = 1
     if (e.type == "mouseenter") { scaleNum = 1.5 } // If the client hovers over the btn
-
     anime({
         targets: e.currentTarget,
         scale: scaleNum,
-        rotate: '1turn'
     });
+})
+
+$(".action").click(function(e) { 
+    var child = e.target
+    var childAct = child.id.replace("chip", "")
+    // Checks what btn of the .action class was click 
+    if (childAct == "Play") { change_turn("betting") }
+    else if (childAct == "Hit") { play_card(current_turn) }
+    else if (childAct == "Stand") { change_turn() }
+    else {add_bet(current_turn, parseInt(childAct))}
 })
 
 // Starts a game
@@ -294,6 +294,4 @@ function start_new_game() {
     allow_bet()
 }
 
-window.onload = function() {
-    start_new_game()
-}
+window.onload = function() { start_new_game() }

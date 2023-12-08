@@ -12,7 +12,6 @@ var place_card = document.getElementById("set1")
 var select_elm = 0
 // The aniamation time line
 var timeline = anime.timeline();
-
 // Converts the cards Letter to a Number
 function convertLetter_toNumber_solitaire(letter) {
 	if (letter[0] == "A") { return 1 }
