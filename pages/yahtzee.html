@@ -15,15 +15,7 @@
             <div id="playSpace">
                 <button id="action">Roll</button>
                 <div id="dice_container">
-                    <div id="dice1" class="dice">
-                        <div class="dot top left"></div>
-                        <div class="dot top right"></div>
-                        <div class="dot middle left"></div>
-                        <div class="dot middle mid"></div>
-                        <div class="dot middle right"></div>
-                        <div class="dot bottom left"></div>
-                        <div class="dot bottom right"></div>
-                    </div>
+                    <div id="dice1" class="dice"></div>
                     <div id="dice2" class="dice"></div>
                     <div id="dice3" class="dice"></div>
                     <div id="dice4" class="dice"></div>
@@ -38,85 +30,102 @@
                 </tr>
                 <tr>
                     <td>Ones</td>
-                    <td></td>
-                    <td></td>
+                    <td id="p1_ones"></td>
+                    <td id="p2_ones"></td>
                 </tr>
                 <tr>
                     <td>Twos</td>
-                    <td></td>
-                    <td></td>
+                    <td id="p1_twos"></td>
+                    <td id="p2_twos"></td>
                 </tr>
                 <tr>
                     <td>Threes</td>
-                    <td></td>
-                    <td></td>
+                    <td id="p1_threes"></td>
+                    <td id="p2_threes"></td>
                 </tr>
                 <tr>
                     <td>Fours</td>
-                    <td></td>
-                    <td></td>
+                    <td id="p1_fours"></td>
+                    <td id="p2_fours"></td>
                 </tr>
                 <tr>
                     <td>Fives</td>
-                    <td></td>
-                    <td></td>
+                    <td id="p1_fives"></td>
+                    <td id="p2_fives"></td>
                 </tr>
                 <tr>
                     <td>Sixes</td>
-                    <td></td>
-                    <td></td>
+                    <td id="p1_sixes"></td>
+                    <td id="p2_sixes"></td>
+                </tr>
+                <tr>
+                    <td style="background-color: black;"></td>
+                    <td style="background-color: black;"></td>
+                    <td style="background-color: black;"></td>
                 </tr>
                 <tr>
                     <td>Total</td>
-                    <td></td>
-                    <td></td>
+                    <td id="p1_total"></td>
+                    <td id="p2_total"></td>
                 </tr>
                 <tr>
                     <td>Bonus</td>
-                    <td></td>
-                    <td></td>
+                    <td id="p1_bonus"></td>
+                    <td id="p2_bonus"></td>
+                </tr>
+                <tr>
+                    <td style="background-color: black;"></td>
+                    <td style="background-color: black;"></td>
+                    <td style="background-color: black;"></td>
                 </tr>
                 <tr>
                     <td>Three of a Kind</td>
-                    <td></td>
-                    <td></td>
+                    <td id="p1_three_kind"></td>
+                    <td id="p2_three_kind"></td>
                 </tr>
                 <tr>
                     <tr>
                     <td>Four of a Kind</td>
-                    <td></td>
-                    <td></td>
+                    <td id="p1_four_kind"></td>
+                    <td id="p2_four_kind"></td>
                 </tr>
                 <tr>
                     <td>Full House</td>
-                    <td></td>
-                    <td></td>
+                    <td id="p1_house"></td>
+                    <td id="p2_house"></td>
                 </tr>
                     <td>Small Straight</td>
-                    <td></td>
-                    <td></td>
+                    <td id="p1_sm_straight"></td>
+                    <td id="p2_sm_straight"></td>
                 </tr>
                 <tr>
                     <td>Large Straight</td>
-                    <td></td>
-                    <td></td>
+                    <td id="p1_lar_straight"></td>
+                    <td id="p2_lar_straight"></td>
                 </tr>
                 <tr>
                     <td>Chance</td>
-                    <td></td>
-                    <td></td>
+                    <td id="p1_chance"></td>
+                    <td id="p2_chance"></td>
                 </tr>
                 <tr>
                     <td>YAHTZEE</td>
-                    <td></td>
-                    <td></td>
+                    <td id="p1_yahtzee"></td>
+                    <td id="p2_yahtzee"></td>
+                </tr>
+                <tr>
+                    <td style="background-color: black;"></td>
+                    <td style="background-color: black;"></td>
+                    <td style="background-color: black;"></td>
                 </tr>
                 <tr>
                     <td>TOTAL SCORE</td>
-                    <td></td>
-                    <td></td>
+                    <td id="p1_total_score"></td>
+                    <td id="p2_total_score"></td>
                 </tr>
             </table>
         </div>
+        <script src="/scripts/main.js"></script>
+        <script src="/scripts/yahtzee.js"></script>
     </body>
 </html>

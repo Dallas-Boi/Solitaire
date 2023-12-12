@@ -71,9 +71,11 @@ table, tr, td {
     height:50px;
     border-radius: .25em;
     background-color: white;
+    border: 1px solid black;
 }
 
 .dot {
+    pointer-events: none;
     position: absolute;
     width:10px;
     height: 10px;
@@ -83,7 +85,6 @@ table, tr, td {
     background-color: red;
     border-radius: 2em;
     margin-top:5px;
-    
 }
 /* The placements of the dice inner */
 .left {margin-left:.25em}
