@@ -110,7 +110,7 @@ function clicked_card(e) {
 }
 
 window.onload = function () {
-	document.onmousedown = clicked_card
+	document.onmousedown = clicked_card // If the play is just moving the element
 }
 
 // Starts the Game 

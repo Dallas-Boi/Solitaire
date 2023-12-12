@@ -41,33 +41,46 @@ class Player {
     // Cash
     add_player_cash(amount) {
         this.cash += amount
-        this.cash_elm.textContent = this.cash
+        anime({
+            targets: this.cash_elm,
+            innerHTML: [this.cash-amount, this.cash],
+            round: 1
+        })
     }
     remove_player_cash(amount) {
         this.cash -= amount
-        this.cash_elm.textContent = this.cash
+        anime({
+            targets: this.cash_elm,
+            innerHTML: [this.cash+amount, this.cash],
+            round: 1
+        })
     }
     get_player_bet() {return this.bet}
     // Player Betting
     add_player_bet(amount) {
         this.bet += amount
+        anime({
+            targets: this.pot_elm,
+            innerHTML: [this.bet-amount, this.bet],
+            round: 1
+        })
+        addPot(amount)
         pot += amount
         pot_info.textContent = pot
         this.remove_player_cash(amount)
         this.pot_elm.textContent = this.bet
-        
     } 
     remove_player_bet(amount) {
         this.bet -= amount
-        pot -= amount
+        anime({
+            targets: this.pot_elm,
+            innerHTML: [this.bet+amount, this.bet],
+            round: 1
+        })
         pot_info.textContent = pot
         this.add_player_cash(amount)
         this.pot_elm.textContent = this.bet
     }
-    set_player_bet(amount) {
-        this.bet = amount
-    } 
-
     // Cards
     get_player_cards() {return this.cards}
     add_player_cards(card) {
@@ -95,14 +108,39 @@ class Player {
     }
     // This will reset the player for the next round
     reset_player() {
+        
+        // Animation for the total pot
+        removePot(pot)
+        // Animation for the player pot
+        this.remove_player_bet(this.bet)
+        // Animation for this players cards
+        anime({
+            targets: this.cards,
+            top: -500,
+            duration: 800
+        })
         this.cards = []
-        this.set_player_bet(0)
-        pot = 0
-        pot_info.textContent = 0
-        this.pot_elm.textContent = 0
-        this.card_elm.innerHTML = ""
         this.card_val_elm.textContent = 0
     }
+}
+
+// Adds to the global pot
+function addPot(amount) {
+    pot += amount
+    anime({
+        targets: pot_info,
+        innerHTML: [pot-amount, pot],
+        round: 1
+    })
+}
+// Removes from the global pot
+function removePot(amount) {
+    pot -= amount
+    anime({
+        targets: pot_info,
+        innerHTML: [pot+amount, pot],
+        round: 1
+    })
 }
 
 // Return the index of the highest number / or number 
@@ -201,6 +239,7 @@ function change_turn(arg) {
     else if (arg == "bust") {send_noti(`Player ${current_turn+1} Busted`);end_current_round();return}   
     
     current_turn += 1
+    // Checks if the playes have had their turn
     if (current_turn > players.length-1) {
         if (arg) {current_turn = 0}
         else {end_current_round();return}

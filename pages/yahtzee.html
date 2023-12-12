@@ -1,0 +1,122 @@
+<html>
+    <head>
+        <title>- Yahtzee - </title>
+        <link rel="stylesheet" href="/stylesheets/main.css">
+        <link rel="stylesheet" href="/stylesheets/yahtzee.css">
+        <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+        <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js" integrity="sha256-xLD7nhI62fcsEZK2/v8LsBcb4lG7dgULkuXoXB/j91c=" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/animejs@3.0.1/lib/anime.min.js"></script>
+    </head>
+    <body>
+        <div id="header">
+            <a href="/index.html">Home</a>
+        </div>
+        <div id="gameboard">
+            <div id="playSpace">
+                <button id="action">Roll</button>
+                <div id="dice_container">
+                    <div id="dice1" class="dice">
+                        <div class="dot top left"></div>
+                        <div class="dot top right"></div>
+                        <div class="dot middle left"></div>
+                        <div class="dot middle mid"></div>
+                        <div class="dot middle right"></div>
+                        <div class="dot bottom left"></div>
+                        <div class="dot bottom right"></div>
+                    </div>
+                    <div id="dice2" class="dice"></div>
+                    <div id="dice3" class="dice"></div>
+                    <div id="dice4" class="dice"></div>
+                    <div id="dice5" class="dice"></div>
+                </div>
+            </div>
+            <table id="paper">
+                <tr>
+                    <td></td>
+                    <td>Player 1</td>
+                    <td>Player 2</td>
+                </tr>
+                <tr>
+                    <td>Ones</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Twos</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Threes</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Fours</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Fives</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Sixes</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Total</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Bonus</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Three of a Kind</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <tr>
+                    <td>Four of a Kind</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Full House</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                    <td>Small Straight</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Large Straight</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Chance</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>YAHTZEE</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>TOTAL SCORE</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
+        </div>
+    </body>
+</html>
