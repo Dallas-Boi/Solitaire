@@ -42,9 +42,15 @@ table, tr, td {
     margin-left:34em;
 }
 
+/* The current player turn */
+.current {
+    background-color: black;
+    color:white;
+}
+
 /* Paper Elements */
-.input:hover { background-color: rgb(250, 162, 152);}
-.input > * {color:red;pointer-events: none;}
+.input:hover:has(div) { background-color: rgb(250, 162, 152);}
+.input:has(div) > * {color:red;pointer-events: none;}
 
 /* The gameboard elements */
 #action {
