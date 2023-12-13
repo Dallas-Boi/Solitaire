@@ -42,6 +42,11 @@ table, tr, td {
     margin-left:34em;
 }
 
+/* Paper Elements */
+.input:hover { background-color: rgb(250, 162, 152);}
+.input > * {color:red;pointer-events: none;}
+
+/* The gameboard elements */
 #action {
     position: relative;
     font-size: 25px;
@@ -56,6 +61,11 @@ table, tr, td {
 #action:hover {
     background-color: red;
     color:white;
+}
+
+#action:disabled {
+    background-color: grey;
+    box-shadow: -1px -1px 1px black;
 }
 
 #dice_container {
