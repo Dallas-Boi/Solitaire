@@ -52,6 +52,11 @@ table, tr, td {
 .input:hover:has(div) { background-color: rgb(250, 162, 152);}
 .input:has(div) > * {color:red;pointer-events: none;}
 
+/* During the end these cells will be highlighted */
+.end_select > * {
+    background-color: rgb(250, 162, 152);
+}
+
 /* The gameboard elements */
 #action {
     position: relative;
@@ -112,3 +117,36 @@ table, tr, td {
 .mid {margin-left: 1.25em;}
 
 .bottom {margin-top: 2.15em}
+
+/* Everything for end_table */
+#end_table {
+    position: relative;
+    background-color: white;
+    width:5em;
+    height: 5em;
+    z-index: 10;
+    max-width: 100%;
+    max-height: 100%;
+    margin-top:-25em;
+    margin-left:13.5em;
+}
+
+/* Winner Title */
+#winnerTitle {
+    position: relative;
+    margin-top:-30em;
+    width:10em;
+    height:2em;
+    margin-left:12.25em
+}
+
+#winnerTitle > * {
+    position: relative;
+    vertical-align: middle;
+    text-align: center;
+    justify-content: center;
+    background-color: black;
+    width:10em;
+    height:2em;
+    color:white;
+}

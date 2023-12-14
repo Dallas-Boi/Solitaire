@@ -75,6 +75,12 @@ class Dice {
     }
 }
 
+const wait = async (milliseconds) => {
+    await new Promise(resolve => {
+        return setTimeout(resolve, milliseconds)
+    });
+};
+
 // Changes the current player turn
 function change_turn() {
     $("#action").prop("disabled", false) // Removes the last click event for the action btn
@@ -90,7 +96,7 @@ function change_turn() {
     // turns
     currTurn++
     if (currTurn >= 3) {currTurn = 1} // If the currTurn pass the amount of players
-    
+    rolls = 0 // Resets rolls
     // Changes the .current for the current player
     $(".current").removeClass("current") // Removes the old .current class
     $(`#p${currTurn}_name`).addClass("current")
@@ -114,14 +120,13 @@ function change_turn() {
 
 // When called it will add the value to the input
 function add_paperVal(elm, ply) {
-    
+    // If the element has no children
     if ($(elm).children().length == 0) {return}
     $(elm).html(elm.textContent) // Sets the content to be the number
     players[`player${ply}`]["all_total"] += parseInt(elm.textContent) // Adds to this players all_total
     // Checks if the clicked elm is part of the first 6
     if (items.includes(elm.id.replace(`p${ply}_`, ""))) {players[`player${ply}`]["total"] += parseInt(elm.textContent)}
     change_turn() // Changes the turn
-    rolls = 0 // Resets rolls
     // This will check the main 6 inputs if they are 
     var list6 = 0
     for (var i=0; i < items.length; i++) {
@@ -140,14 +145,44 @@ function add_paperVal(elm, ply) {
     // Checks if all inputs are entered
     var all_inp = 0 + list6
     for (var i=6; i < otherItm.length; i++) {
-        if ($(`#p${ply}_${items[i]}`).text().length !== 0) {all_inp++}
+        if ($(`#p${ply}_${otherItm[i]}`).html().length !== 0) {all_inp++}
     }
     // If all inputs are enter then it will end the game and add all the items
-    if ((all_inp == 13) && (ply == 2)) {
-        otherItm.push("bonus", 6)
-        for (var i=6; i < otherItm.length; i++) {
-            if ($(`#p${ply}_${items[i]}`).text().length !== 0) {all_inp++}
+    if ((all_inp >= 13) && (ply == 2)) {
+        var p1_score = 0
+        var p2_score = 0
+        otherItm.splice(6, 0, "total", "bonus")
+        // Goes through otherItms and adds the values up
+        const endGame = async () => {
+            $("#end_table").prop("hidden", false)
+            for (var i=0; i < otherItm.length; i++) {
+                $(`#p1_${otherItm[i]}`).parent().addClass("end_select")
+                if (otherItm[i] !== "total") {
+                    // Adds to the score
+                    p1_score += parseInt($(`#p1_${otherItm[i]}`).html())
+                    p2_score += parseInt($(`#p2_${otherItm[i]}`).html())
+                } else { // If it equals total then it will just set the total
+                    p1_score = parseInt($(`#p1_${otherItm[i]}`).html())
+                    p2_score = parseInt($(`#p2_${otherItm[i]}`).html())
+                }
+                // Shows the score
+                $("#p1_add").html(p1_score);$("#p2_add").html(p2_score)
+                await wait(1000)
+                $(`#p1_${otherItm[i]}`).parent().delay( 1500 ).removeClass("end_select")
+            }
+            // Sets the total score on the players card
+            $(`#p1_total_score`).html(p1_score)
+            $(`#p2_total_score`).html(p2_score)
+            // Finds out who won
+            if (p1_score > p2_score) { // If Player 1 Wins
+                $("#winnerTitle").html("<div>Player 1 Wins</div>")
+            } else if (p1_score < p2_score) { // If Player 2 Wins
+                $("#winnerTitle").html("<div>Player 2 Wins</div>")
+            } else { // If It was a Tie
+                $("#winnerTitle").html("<div>Tie Game</div>")
+            }
         }
+        endGame()
     }
 }
 
@@ -221,7 +256,10 @@ function update_inputs() {
         if (diceVal.includes(i)) {
             // This will update the single digit inputs
             var times = get_all_item(i)
-            if ($(`#p${currTurn}_${items[i-1]}`).html().length == 0) {$(`#p${currTurn}_${items[i-1]}`).html(`<div class="temp">${times*i}</div>`)}
+            if ($(`#p${currTurn}_${items[i-1]}`).html().length == 0) {
+                $(`#p${currTurn}_${items[i-1]}`).html(`<div class="temp">${times*i}</div>`)
+                hasInput = true
+            }
             // This will do check on the unique
             // This checks for Three of a kind
             if (times >= 3) { 
@@ -239,6 +277,7 @@ function update_inputs() {
             }
             // This checks for YAHTZEE
             if (times >= 5) { 
+                if ($(`#p${currTurn}_yahtzee`).html().length == 1) {return}
                 // If the player has their first YAHTZEE
                 if (players[`player${currTurn}`]["total_yahtzee"] == 0) {$(`#p${currTurn}_yahtzee`).html(`<div class="temp">50</div>`);}
                 else { // If the player gets another yahtzee
@@ -257,6 +296,7 @@ function update_inputs() {
         if ((get_all_item(arr_dieVal[0]) == 3) || (get_all_item(arr_dieVal[0]) == 2)) {
             if ((get_all_item(arr_dieVal[1]) == 3) || (get_all_item(arr_dieVal[1]) == 2)) {
                 $(`#p${currTurn}_house`).html(`<div class="temp">25</div>`)
+                hasInput = true
             }
         }   
     }
@@ -276,10 +316,16 @@ function update_inputs() {
         }
     }
     // Chance
-    if ($(`#p${currTurn}_chance`).html().length == 0) {$(`#p${currTurn}_chance`).html(`<div class="temp">${getTotal()}</div>`);hasInput = true}
+    if ($(`#p${currTurn}_chance`).html().length == 0) {
+        $(`#p${currTurn}_chance`).html(`<div class="temp">${getTotal()}</div>`);hasInput = true
+    }
     // No Inputs
     if (hasInput == false) {
-        
+        for (var i=0; i < otherItm.length; i++) {
+            if ($(`#p${currTurn}_${otherItm[i]}`).html().length == 0) { // Makes all empty inputs be 0
+                $(`#p${currTurn}_${otherItm[i]}`).html(`<div class="temp">0</div>`)
+            }
+        }
     }
 }
 
