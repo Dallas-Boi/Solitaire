@@ -4,7 +4,7 @@ var currTurn = 0
 var rolls = 0
 var diceVal = []
 var dieList = [] // All the dice classes
-var players = {"player1":{"total":0, "all_total": 0}, "player2":{"total":0, "all_total": 0}}
+var players = {"player1":{"total":0, "all_total": 0, "total_yahtzee": 0}, "player2":{"total":0, "all_total": 0, "total_yahtzee": 0}}
 // All paper items
 var items = ["ones", "twos", "threes", "fours", "fives", "sixes"]
 var otherItm = [...items, "three_kind", "four_kind", "house", "sm_straight", "lar_straight", "chance", "yahtzee"]
@@ -77,7 +77,8 @@ class Dice {
 
 // Changes the current player turn
 function change_turn() {
-    $("#action").unbind("click") // Removes the last click event for the action btn
+    $("#action").prop("disabled", false) // Removes the last click event for the action btn
+    $("#action").unbind("click") // This will fix the issue when clicking the btn it will press it twice
     $(".input").unbind("click") // Removes the click action for all of the current players paper items
     $(".temp").remove() // Removes all .temp class elements
     $(".input").removeClass("input") // Removes input from all of the current players paper items
@@ -89,7 +90,7 @@ function change_turn() {
     // turns
     currTurn++
     if (currTurn >= 3) {currTurn = 1} // If the currTurn pass the amount of players
-    rolls = 0 // Resets rolls
+    
     // Changes the .current for the current player
     $(".current").removeClass("current") // Removes the old .current class
     $(`#p${currTurn}_name`).addClass("current")
@@ -107,23 +108,20 @@ function change_turn() {
         update_inputs()
         rolls++
         // If the player has rolled 3 times
-        if (rolls == 3) { 
-            $("#action").html("End Turn") // Changes the text to End Turn
-            $("#action").unbind("click") // Removes the click for rolling the dice
-        }
+        if (rolls == 3) {$("#action").prop("disabled", true)}
     })
 }
 
 // When called it will add the value to the input
 function add_paperVal(elm, ply) {
-    console.log(elm)
+    
     if ($(elm).children().length == 0) {return}
     $(elm).html(elm.textContent) // Sets the content to be the number
     players[`player${ply}`]["all_total"] += parseInt(elm.textContent) // Adds to this players all_total
     // Checks if the clicked elm is part of the first 6
     if (items.includes(elm.id.replace(`p${ply}_`, ""))) {players[`player${ply}`]["total"] += parseInt(elm.textContent)}
     change_turn() // Changes the turn
-    
+    rolls = 0 // Resets rolls
     // This will check the main 6 inputs if they are 
     var list6 = 0
     for (var i=0; i < items.length; i++) {
@@ -140,11 +138,17 @@ function add_paperVal(elm, ply) {
     }
 
     // Checks if all inputs are entered
-    var all_inp = 0
-    for (var i=0; i < otherItm.length; i++) {
+    var all_inp = 0 + list6
+    for (var i=6; i < otherItm.length; i++) {
         if ($(`#p${ply}_${items[i]}`).text().length !== 0) {all_inp++}
     }
     // If all inputs are enter then it will end the game and add all the items
+    if ((all_inp == 13) && (ply == 2)) {
+        otherItm.push("bonus", 6)
+        for (var i=6; i < otherItm.length; i++) {
+            if ($(`#p${ply}_${items[i]}`).text().length !== 0) {all_inp++}
+        }
+    }
 }
 
 // Saves the dice
@@ -180,20 +184,30 @@ function get_all_item(value) {
 }
 
 // Returns if it is in order
-function inNumOrder(values) {
-    for (var j=0; j < values.length; j++) {
-        if (!(diceVal[j]+1 == diceVal[j+1])) {return false}
+function inNumOrder(values, rtn) {
+    // rtn: The value that the vairable "times" needs to be
+    console.log(values)
+    var times = 0
+    for (var j=0; j < values.length-1; j++) {
+        //console.log(values[j]+1, "!==", values[j+1], values[j]+1 !== values[j+1])
+        if (values[j]+1 == values[j+1]) {times++} // If the next value is one greater than the current value
+        if (times >= rtn) {return true}
     }
-    return true
+    return false
 }
 
 // Returns the total of the list of dice values
 function getTotal() {
     var sum=0
-    diceVal.forEach(num => {
-        sum += num;
-    })
+    diceVal.forEach(num => {sum += num;})
     return sum
+}
+
+// When called this will set all of the open inputs to the given value
+function setOpen_inputs(value) {
+    for (var i=0; i < otherItm.length; i++) {
+        if ($(`#p${currTurn}_${otherItm[i]}`).text().length == 0) {$(`#p${currTurn}_${otherItm[i]}`).html(`<div class="temp">${value}</div>`)}
+    }
 }
 
 // When called it will update the paper inputs ( A lot of Checks )
@@ -203,24 +217,40 @@ function update_inputs() {
     $(".temp").remove() // Removes the old .temp elements
     // Goes through the items list and does checks || For single nums
     for (var i=1; i < items.length+1; i++) {
-        // Resets all innerHTMLs For 3 of a kind and below
-        // Updaates all HTMLs
+        // Checks if i is a number in the dice values
         if (diceVal.includes(i)) {
             // This will update the single digit inputs
             var times = get_all_item(i)
-            console.log(i, times)
             if ($(`#p${currTurn}_${items[i-1]}`).html().length == 0) {$(`#p${currTurn}_${items[i-1]}`).html(`<div class="temp">${times*i}</div>`)}
             // This will do check on the unique
             // This checks for Three of a kind
-            if (times >= 3) { $(`#p${currTurn}_three_kind`).html(`<div class="temp">${getTotal()}</div>`);hasInput = true}
+            if (times >= 3) { 
+                if ($(`#p${currTurn}_three_kind`).html().length == 0) {
+                    $(`#p${currTurn}_three_kind`).html(`<div class="temp">${getTotal()}</div>`);
+                    hasInput = true
+                }
+            }
             // This checks for Four of a kind
-            if (times >= 4) { $(`#p${currTurn}_four_kind`).html(`<div class="temp">${getTotal()}</div>`);hasInput = true}
+            if (times >= 4) { 
+                if ($(`#p${currTurn}_four_kind`).html().length == 0) {
+                    $(`#p${currTurn}_four_kind`).html(`<div class="temp">${getTotal()}</div>`);
+                    hasInput = true
+                }
+            }
             // This checks for YAHTZEE
-            if (times >= 5) { $(`#p${currTurn}_yahtzee`).html(`<div class="temp">50</div>`);hasInput = true}
+            if (times >= 5) { 
+                // If the player has their first YAHTZEE
+                if (players[`player${currTurn}`]["total_yahtzee"] == 0) {$(`#p${currTurn}_yahtzee`).html(`<div class="temp">50</div>`);}
+                else { // If the player gets another yahtzee
+                    setOpen_inputs(getTotal())
+                    $(`#p${currTurn}_yahtzee`).html(50+((players[`player${currTurn}`]["total_yahtzee"]+1)*100))
+                } 
+                players[`player${currTurn}`]["total_yahtzee"] += 1
+                hasInput = true
+            }
         }
-        
     }
-    // This checks for Full House
+    // Full House
     var arr_dieVal = Array.from(new Set(diceVal))
     if (arr_dieVal.length == 2) { // If the arr_dieVal is only 2 values
         // It checks if the items have at least 2 or 3 times
@@ -230,23 +260,28 @@ function update_inputs() {
             }
         }   
     }
-    // This checks for small straight
-    if (arr_dieVal.length == 4) {
-        if(inNumOrder(arr_dieVal)) {$(`#p${currTurn}_sm_straight`).html(`<div class="temp">30</div>`);hasInput = true}
-    }
-    // This checks for large straight
-    if (arr_dieVal.length == 5) {$(`#p${currTurn}_lar_straight`).html(`<div class="temp">40</div>`);hasInput = true}
-    // This will allow the chance
-    if ($(`#p${currTurn}_chance`).html().length == 0) {$(`#p${currTurn}_chance`).html(`<div class="temp">${getTotal()}</div>`);hasInput = true}
-    // Checks if the player has no valid inputs
-    if (hasInput == false) {
-        for (var i=0; i < otherItm.length; i++) {
-            if ($(`#p${ply}_${items[i]}`).text().length == 0) {$(`#p${ply}_${otherItm[i]}`).html(`<div class="temp">0</div>`)}
+
+    // Small straight
+    if (arr_dieVal.length >= 4) {
+        if ((inNumOrder(arr_dieVal, 3)) && ($(`#p${currTurn}_sm_straight`).html().length == 0)) {
+            $(`#p${currTurn}_sm_straight`).html(`<div class="temp">30</div>`);
+            hasInput = true
         }
     }
+    // large straight
+    if (arr_dieVal.length == 5) {
+        if ((inNumOrder(arr_dieVal, 4)) && ($(`#p${currTurn}_lar_straight`).html().length == 0)) {
+            $(`#p${currTurn}_lar_straight`).html(`<div class="temp">40</div>`);
+            hasInput = true
+        }
+    }
+    // Chance
+    if ($(`#p${currTurn}_chance`).html().length == 0) {$(`#p${currTurn}_chance`).html(`<div class="temp">${getTotal()}</div>`);hasInput = true}
+    // No Inputs
+    if (hasInput == false) {
+        
+    }
 }
-
-
 
 // When the window loads start the game
 window.onload = function() {
