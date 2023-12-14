@@ -19,6 +19,13 @@ function shuffle(array) {
 	}
 }
 
+// When Called it will pause the code
+const wait = async (milliseconds) => {
+    await new Promise(resolve => {
+        return setTimeout(resolve, milliseconds)
+    });
+};
+
 // Returns the card set color
 function getCardSetColor(card_set) {
 	if (["D", "H"].includes(card_set)) { return "red" }

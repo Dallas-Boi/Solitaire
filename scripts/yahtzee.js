@@ -3,11 +3,81 @@
 var currTurn = 0
 var rolls = 0
 var diceVal = []
-var dieList = [] // All the dice classes
-var players = {"player1":{"total":0, "all_total": 0, "total_yahtzee": 0}, "player2":{"total":0, "all_total": 0, "total_yahtzee": 0}}
+const dieList = [] // All the dice classes
+const plyList = []
 // All paper items
 var items = ["ones", "twos", "threes", "fours", "fives", "sixes"]
 var otherItm = [...items, "three_kind", "four_kind", "house", "sm_straight", "lar_straight", "chance", "yahtzee"]
+
+// Handles the players
+class Players {
+    constructor(id) {
+        this.id = id
+        // Score values
+        // Upper
+        this.ones = 0
+        this.twos = 0
+        this.threes = 0
+        this.fours = 0
+        this.fives = 0
+        this.sixes = 0
+        this.bonus = 0
+        this.upper_total = 0
+        // Lower
+        this.threeKind = 0
+        this.fourKind = 0
+        this.full_house= 0
+        this.small_straight = 0
+        this.large_straight = 0
+        this.chance = 0
+        this.yahtzee = 0
+        this.total_yahtzee = 0
+        this.all_total = 0
+        // Other Data
+        this.turnAmount = -1
+        this.turnRoll = 0
+        this.turnData = []
+    }
+    // Gets
+    get_player_id() {return this.id}
+    get_upper_total() {return this.upper_total}
+    get_all_total() {return this.all_total}
+    get_total_yahtzee() {return this.total_yahtzee}
+    // Sets / Adds / Removes
+    changed_turn() {this.turnAmount++}
+    // This will add the turn data when called
+    player_rolled(data) {
+        this.turnData[this.turnAmount][this.turnRoll] = JSON.parse(data)
+        this.turnRoll++
+    }
+    // When called it will add the give value to the given variable
+    add_value(itm, add) {
+        
+        this.all_total += add
+        // Check if it apart of the upper inputs
+        if (items.includes(itm)) {
+            if (itm == "ones") {this.ones += add}
+            else if (itm == "twos") {this.twos += add}
+            else if (itm == "threes") {this.threes += add}
+            else if (itm == "fours") {this.fours += add}
+            else if (itm == "fives") {this.fives += add}
+            else if (itm == "sixes") {this.sixes += add}
+            this.add_upper_total(add)
+            return
+        }
+        this.upper_total += add
+        // If its not apart of the upper inputs
+        if (itm == "bonus") {this.bonus += add}
+        else if (itm == "three_kind") {this.threeKind += add}
+        else if (itm == "four_kind") {this.fourKind += add}
+        else if (itm == "house") {this.full_house += add}
+        else if (itm == "sm_straight") {this.small_straight += add}
+        else if (itm == "lar_straight") {this.large_straight += add}
+        else if (itm == "chance") {this.chance += add}
+        else if (itm == "yahtzee") {this.yahtzee += add;this.total_yahtzee++}
+    }
+}
+
 // Makes the dice
 class Dice {
     constructor(dice) {
@@ -75,14 +145,9 @@ class Dice {
     }
 }
 
-const wait = async (milliseconds) => {
-    await new Promise(resolve => {
-        return setTimeout(resolve, milliseconds)
-    });
-};
-
 // Changes the current player turn
 function change_turn() {
+    plyList[currTurn].changed_turn()
     $("#action").prop("disabled", false) // Removes the last click event for the action btn
     $("#action").unbind("click") // This will fix the issue when clicking the btn it will press it twice
     $(".input").unbind("click") // Removes the click action for all of the current players paper items
@@ -113,6 +178,8 @@ function change_turn() {
         roll_dice()
         update_inputs()
         rolls++
+        // This will log the all the players rolls
+        plyList[currTurn-1].player_rolled({"diceVal": diceVal})
         // If the player has rolled 3 times
         if (rolls == 3) {$("#action").prop("disabled", true)}
     })
@@ -123,9 +190,8 @@ function add_paperVal(elm, ply) {
     // If the element has no children
     if ($(elm).children().length == 0) {return}
     $(elm).html(elm.textContent) // Sets the content to be the number
-    players[`player${ply}`]["all_total"] += parseInt(elm.textContent) // Adds to this players all_total
     // Checks if the clicked elm is part of the first 6
-    if (items.includes(elm.id.replace(`p${ply}_`, ""))) {players[`player${ply}`]["total"] += parseInt(elm.textContent)}
+    plyList[ply-1].add_value(elm.id.replace(`p${ply}_`, ""), elm.textContent)
     change_turn() // Changes the turn
     // This will check the main 6 inputs if they are 
     var list6 = 0
@@ -135,11 +201,11 @@ function add_paperVal(elm, ply) {
     // If the first 6 inputs have values then this will check for bonus points
     if (list6 == 6) {
         var bonus = 0
-        $(`#p${ply}_total`).html(players[`player${ply}`]["total"])
+        $(`#p${ply}_total`).html(plyList[ply-1].get_upper_total())
         // If the player has over 63 points in the first 6 inputs then they get a bonus
-        if (players[`player${ply}`]["total"] >= 63) {bonus = 35}
+        if (plyList[ply-1].get_upper_total() >= 63) {bonus = 35}
         $(`#p${ply}_bonus`).html(bonus) // Sets the players bonus text
-        players[`player${ply}`]["all_total"] += bonus // Adds the bonus to the all_total value
+        plyList[ply-1].add_value("bonus", bonus) // Adds the bonus to the all_total value
     }
 
     // Checks if all inputs are entered
@@ -279,12 +345,13 @@ function update_inputs() {
             if (times >= 5) { 
                 if ($(`#p${currTurn}_yahtzee`).html().length == 1) {return}
                 // If the player has their first YAHTZEE
-                if (players[`player${currTurn}`]["total_yahtzee"] == 0) {$(`#p${currTurn}_yahtzee`).html(`<div class="temp">50</div>`);}
+                if (plyList[currTurn-1].get_total_yahtzee() == 0) {$(`#p${currTurn}_yahtzee`).html(`<div class="temp">50</div>`);}
                 else { // If the player gets another yahtzee
                     setOpen_inputs(getTotal())
-                    $(`#p${currTurn}_yahtzee`).html(50+((players[`player${currTurn}`]["total_yahtzee"]+1)*100))
+                    ply[currTurn-1].add_value("yahtzee")
+                    $(`#p${currTurn}_yahtzee`).html()
                 } 
-                players[`player${currTurn}`]["total_yahtzee"] += 1
+                plyList[currTurn-1].add_total_yahtzee()
                 hasInput = true
             }
         }
@@ -333,5 +400,6 @@ function update_inputs() {
 window.onload = function() {
     // Makes the dice list
     for(var i=0; i < 5; i++) {dieList.push(new Dice($(`#dice${i+1}`)[0]))}
+    for(var i=0; i < 2; i++) {plyList.push(new Players(`player${i}`))} // Makes the players
     change_turn()
 }
