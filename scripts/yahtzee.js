@@ -34,47 +34,64 @@ class Players {
         this.total_yahtzee = 0
         this.all_total = 0
         // Other Data
-        this.turnAmount = -1
+        this.turnAmount = 0
         this.turnRoll = 0
         this.turnData = []
+        this.turnData[this.turnAmount] = []
+        this.won = false
     }
     // Gets
     get_player_id() {return this.id}
     get_upper_total() {return this.upper_total}
     get_all_total() {return this.all_total}
     get_total_yahtzee() {return this.total_yahtzee}
+    change_win(val) {this.win = val}
     // Sets / Adds / Removes
-    changed_turn() {this.turnAmount++}
+    // when the players turn gets changed
+    changed_turn() {
+        
+    }
     // This will add the turn data when called
     player_rolled(data) {
-        this.turnData[this.turnAmount][this.turnRoll] = JSON.parse(data)
+        console.log(this.turnAmount, this.turnRoll)
+        this.turnData[this.turnAmount][this.turnRoll] = data
         this.turnRoll++
     }
     // When called it will add the give value to the given variable
     add_value(itm, add) {
-        
-        this.all_total += add
+        this.all_total += parseInt(add)
+        // When the user selects an score card value
+        if (itm !== "bonus") {
+            this.turnData[this.turnAmount][this.turnRoll] = itm
+            this.turnAmount++;
+            this.turnRoll = 0;
+            this.turnData[this.turnAmount] = []
+        }
         // Check if it apart of the upper inputs
         if (items.includes(itm)) {
-            if (itm == "ones") {this.ones += add}
-            else if (itm == "twos") {this.twos += add}
-            else if (itm == "threes") {this.threes += add}
-            else if (itm == "fours") {this.fours += add}
-            else if (itm == "fives") {this.fives += add}
-            else if (itm == "sixes") {this.sixes += add}
-            this.add_upper_total(add)
+            if (itm == "ones") {this.ones += parseInt(add)}
+            else if (itm == "twos") {this.twos += parseInt(add)}
+            else if (itm == "threes") {this.threes += parseInt(add)}
+            else if (itm == "fours") {this.fours += parseInt(add)}
+            else if (itm == "fives") {this.fives += parseInt(add)}
+            else if (itm == "sixes") {this.sixes += parseInt(add)}
+            this.upper_total += parseInt(add)
             return
         }
-        this.upper_total += add
         // If its not apart of the upper inputs
-        if (itm == "bonus") {this.bonus += add}
-        else if (itm == "three_kind") {this.threeKind += add}
-        else if (itm == "four_kind") {this.fourKind += add}
-        else if (itm == "house") {this.full_house += add}
-        else if (itm == "sm_straight") {this.small_straight += add}
-        else if (itm == "lar_straight") {this.large_straight += add}
-        else if (itm == "chance") {this.chance += add}
-        else if (itm == "yahtzee") {this.yahtzee += add;this.total_yahtzee++}
+        if (itm == "bonus") {this.bonus += parseInt(add)}
+        else if (itm == "three_kind") {this.threeKind += parseInt(add)}
+        else if (itm == "four_kind") {this.fourKind += parseInt(add)}
+        else if (itm == "house") {this.full_house += parseInt(add)}
+        else if (itm == "sm_straight") {this.small_straight += parseInt(add)}
+        else if (itm == "lar_straight") {this.large_straight += parseInt(add)}
+        else if (itm == "chance") {this.chance += parseInt(add)}
+        else if (itm == "yahtzee") {this.yahtzee += parseInt(add);this.total_yahtzee++}
+    }
+    
+    // This will return the data that is logged for AI
+    rtnData() {
+        return this.turnData
     }
 }
 
@@ -147,7 +164,7 @@ class Dice {
 
 // Changes the current player turn
 function change_turn() {
-    plyList[currTurn].changed_turn()
+    
     $("#action").prop("disabled", false) // Removes the last click event for the action btn
     $("#action").unbind("click") // This will fix the issue when clicking the btn it will press it twice
     $(".input").unbind("click") // Removes the click action for all of the current players paper items
@@ -161,6 +178,7 @@ function change_turn() {
     // turns
     currTurn++
     if (currTurn >= 3) {currTurn = 1} // If the currTurn pass the amount of players
+    plyList[currTurn-1].changed_turn()
     rolls = 0 // Resets rolls
     // Changes the .current for the current player
     $(".current").removeClass("current") // Removes the old .current class
@@ -179,7 +197,7 @@ function change_turn() {
         update_inputs()
         rolls++
         // This will log the all the players rolls
-        plyList[currTurn-1].player_rolled({"diceVal": diceVal})
+        plyList[currTurn-1].player_rolled(diceVal)
         // If the player has rolled 3 times
         if (rolls == 3) {$("#action").prop("disabled", true)}
     })
@@ -239,16 +257,20 @@ function add_paperVal(elm, ply) {
             // Sets the total score on the players card
             $(`#p1_total_score`).html(p1_score)
             $(`#p2_total_score`).html(p2_score)
+            $("#winnerTitle").prop("hidden", false)
             // Finds out who won
             if (p1_score > p2_score) { // If Player 1 Wins
                 $("#winnerTitle").html("<div>Player 1 Wins</div>")
+                plyList[0].change_win(true)
             } else if (p1_score < p2_score) { // If Player 2 Wins
                 $("#winnerTitle").html("<div>Player 2 Wins</div>")
+                plyList[1].change_win(true)
             } else { // If It was a Tie
                 $("#winnerTitle").html("<div>Tie Game</div>")
             }
         }
         endGame()
+        console.log(plyList[0].rtnData())
     }
 }
 
@@ -343,15 +365,13 @@ function update_inputs() {
             }
             // This checks for YAHTZEE
             if (times >= 5) { 
-                if ($(`#p${currTurn}_yahtzee`).html().length == 1) {return}
                 // If the player has their first YAHTZEE
                 if (plyList[currTurn-1].get_total_yahtzee() == 0) {$(`#p${currTurn}_yahtzee`).html(`<div class="temp">50</div>`);}
                 else { // If the player gets another yahtzee
                     setOpen_inputs(getTotal())
                     ply[currTurn-1].add_value("yahtzee")
-                    $(`#p${currTurn}_yahtzee`).html()
+                    $(`#p${currTurn}_yahtzee`).html(`${50+(plyList[currTurn-1].get_total_yahtzee()*100)}`)
                 } 
-                plyList[currTurn-1].add_total_yahtzee()
                 hasInput = true
             }
         }

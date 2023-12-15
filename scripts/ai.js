@@ -6,19 +6,17 @@ class AI {
         this.game = game // Name of the game
     }
 }
-
+for (var j=0; j < 10; j++) {
+    var lst = []
+    for (var i=0; i < 5; i++) {
+        lst.push(anime.random(1, 6))
+    }
+    console.log(`[${lst.toString()}]`)
+}
 // Step 1: load data or create some data 
 const data = [
-    {r:255, g:0, b:0, color:'red-ish'},
-    {r:254, g:0, b:0, color:'red-ish'},
-    {r:253, g:0, b:0, color:'red-ish'},
-    {r:0, g:255, b:0, color:'green-ish'},
-    {r:0, g:254, b:0, color:'green-ish'},
-    {r:0, g:253, b:0, color:'green-ish'},
-    {r:0, g:0, b:255, color:'blue-ish'},
-    {r:0, g:0, b:254, color:'blue-ish'},
-    {r:0, g:0, b:253, color:'blue-ish'}
-  ];
+    {"rolled": [1,2,2,4,1], "state": "Win"}
+];
   
   // Step 2: set your neural network options
   const options = {
